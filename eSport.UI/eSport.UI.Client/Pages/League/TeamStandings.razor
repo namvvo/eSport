@@ -1,0 +1,195 @@
+﻿<div class="grid-toolbar">
+    <dl class="listbox">
+        <dt>Lọc:</dt>
+        @foreach (var item in teamStandingFilter)
+        {
+            <dd v-for="item in teamStandingFilter" :key="item.id">
+                <span @onclick="(()=>ChangeTeamStandingFilter(item.Id))" :class="{ selected: item.selected }" class="option">
+                    @item.Name
+                </span>
+            </dd>
+        }
+    </dl>
+   @*  <UseStandingsByCategory Context="result"
+                            SeasonStageId="@(currentSeason?.ActiveSeasonStage.SeasonStageId??0)"
+                            CategoryId="@(currentSeason?.SelectedCatId??0)"
+                            FilterBy="@selectedFilterTeamStanding"
+                            Strategy="ExecutionStrategy.NetworkOnly">
+        <ChildContent>
+            <TeamTable teamStandingByCategory="@(result.StandingsByCategory)"
+                       selectedFilterTeamStanding="@selectedFilterTeamStanding" />
+        </ChildContent>
+        <ErrorContent>
+            Something went wrong ...<br />
+            @result.First().Message
+        </ErrorContent>
+        <LoadingContent>
+            Loading
+        </LoadingContent>
+    </UseStandingsByCategory> *@
+
+</div>
+
+@code {
+
+    private IList<FilterModel> teamStandingFilter = new List<FilterModel>();
+
+    [Parameter]
+    public CurrentSeasonModel? currentSeason { get; set; }
+
+    public int selectedFilterTeamStanding { get; set; } = 0;
+    protected override Task OnInitializedAsync()
+    {
+
+        teamStandingFilter.Add(new FilterModel() { Name = "Tổng quan", Selected = true, Id = 0 });
+        teamStandingFilter.Add(new FilterModel() { Name = "Sân nhà", Selected = false, Id = 1 });
+        teamStandingFilter.Add(new FilterModel() { Name = "Sân khách", Selected = false, Id = 2 });
+        // return await Task.FromResult();
+
+        return base.OnInitializedAsync();
+    }
+
+    // public override Task SetParametersAsync(ParameterView parameters)
+    // {
+    //     parameters.SetParameterProperties(parameters);
+
+    //     // Before we do any rendering check to make sure that Value is set and throw an exception if it's not
+    //     // This will only normally occur during Development
+    //     ArgumentNullException.ThrowIfNull(currentSeason);
+
+    //     return base.SetParametersAsync(ParameterView.Empty);
+    // }
+    private void ChangeTeamStandingFilter(int filter)
+    {
+        var selectedFilterItem = teamStandingFilter.FirstOrDefault(f => f.Id == filter);
+        teamStandingFilter.ToList().ForEach(x => x.Selected = false);
+
+        ChangeTeamStandings(filter);
+    }
+    private void ChangeTeamStandings(int filter)
+    {
+        this.selectedFilterTeamStanding = filter;
+        StateHasChanged();
+    }
+}
+<style>
+    .grid-toolbar {
+        background-color: #D6D6D6;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .standings .st {
+        text-align: center;
+    }
+
+    .standings .o {
+        width: 20px;
+        text-align: center;
+    }
+
+    .standings > tbody > tr > td {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .standings > tbody > tr:nth-child(even) {
+        background: #f0f0f0;
+    }
+
+    .standings > tbody > tr:nth-child(odd) {
+        background: #fff;
+    }
+
+    .standings > tbody > tr:hover {
+        --tw-bg-opacity: 1;
+        background-color: rgb(209 213 219 / var(--tw-bg-opacity));
+    }
+
+    .fixture-table-right .up .fa-caret-up, .standings .up .fa-caret-up {
+        color: #57961c;
+    }
+
+    .fixture-table-right .dw .fa-caret-down, .standings .dw .fa-caret-down {
+        color: #eb5b14;
+    }
+
+    table > tbody > tr > td.hovering {
+        background-color: #D0D0D0;
+    }
+
+    table.history .progression {
+        text-align: left;
+        width: 70%;
+    }
+
+    table.history li {
+        color: #666666;
+        display: inline-block;
+        float: left;
+        height: 1em;
+        line-height: 1em;
+        margin-right: 1px;
+        width: 1.1em;
+        margin-bottom: 1px;
+    }
+
+        table.history li.r0 {
+            background-color: #FF5B00;
+        }
+
+        table.history li.r1 {
+            background-color: #B8B8B8;
+        }
+
+        table.history li.r3 {
+            background-color: #6CC72A;
+        }
+
+    table.streaks .w, table.streaks .wd, table.streaks .d, table.streaks .dl, table.streaks .l, table.streaks .cs, table.streaks .fs {
+        text-align: center;
+    }
+
+    table.standings .p, table.standings .w, table.standings .d, table.standings .l, table.standings .gf, table.standings .ga, table.standings .gd, table.standings .pts {
+        text-align: center;
+        width: 5%;
+    }
+
+    table.standings .mv, table.standings .avag {
+        text-align: center;
+    }
+
+    table .standing-zone-top, table .standing-zone-bottom {
+        border-radius: 3px;
+        color: #FFFFFF;
+    }
+
+    .standing-zone-top1 {
+        background-color: #57961c !important;
+    }
+
+    .standing-zone-top2 {
+        background-color: #008BDF !important;
+    }
+
+    .standing-zone-top3 {
+        background-color: #1F00EF !important;
+    }
+
+    .standing-zone-top4 {
+        background-color: #13008F !important;
+    }
+
+    .standing-zone-bottom1 {
+        background-color: #FFA545 !important;
+    }
+
+    .standing-zone-bottom2 {
+        background-color: #F1372A !important;
+    }
+
+    .standings.table > tfoot > tr > td {
+        background: #f5f5f5;
+    }
+
+</style>

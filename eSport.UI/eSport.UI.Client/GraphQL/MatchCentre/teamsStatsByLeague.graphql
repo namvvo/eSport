@@ -1,0 +1,34 @@
+query teamsStatsByLeague($categoryId: Int!, $seasonStageId: Int!) {
+  teamsStatsByLeague(categoryId: $categoryId, seasonStageId: $seasonStageId) {
+    aerialDuels {
+      name
+      seName
+      info
+    }
+    aggression {
+      name
+      info
+      seName
+      info2
+    }
+    ratings {
+      name
+      info seName
+    }
+    passAccuracy {
+      name
+      info
+      seName
+    }
+    shotsPerGame {
+      name
+      info seName
+    }
+    possession{
+      name
+      info  
+      seName
+    }
+    
+  }
+}

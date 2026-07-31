@@ -1,0 +1,32 @@
+﻿<Project Sdk="Aspire.AppHost.Sdk/13.4.3">
+	
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>d5f01d21-a9f8-49fc-a61d-d727b36e194c</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Catalog.API\Catalog.API.csproj" />
+    <ProjectReference Include="..\eSport.UI\eSport.UI.Client\eSport.UI.Client.csproj" />
+    <ProjectReference Include="..\eSport.UI\eSport.UI\eSport.UI.csproj" />
+    <ProjectReference Include="..\Fantasy.API\Fantasy.API.csproj" />
+    <ProjectReference Include="..\Gateway.API\Gateway.API.csproj" />
+    <ProjectReference Include="..\Identity.API\Identity.API.csproj" />
+    <ProjectReference Include="..\MatchCentre.API\MatchCentre.API.csproj" />
+    <ProjectReference Include="..\Media.API\Media.API.csproj" />
+    <ProjectReference Include="..\News.API\News.API.csproj" />
+    <ProjectReference Include="..\TeamPlayer.API\TeamPlayer.API.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.4.6" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="13.4.6" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="13.4.6" />
+	  
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Ollama" Version="13.4.0" />
+  </ItemGroup>
+
+</Project>

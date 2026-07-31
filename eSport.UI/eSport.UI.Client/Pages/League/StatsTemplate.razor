@@ -1,0 +1,74 @@
+﻿<StatsItemTemplate Items="Items" Context="item" DivCss="@DivCss">
+    <RowHeader>
+        <th class="stat-title" colspan="2">@RowHeaderTitle</th>
+    </RowHeader>
+    <RowTemplate>
+        <td class="list-key">
+            @if (IsPLayer)
+            {
+                <NavLink class="team-link" href="@($"cauthu/{item.SeName}")" title="@item.Name">
+                    @item.Name
+                </NavLink>
+            }
+            else
+            {
+                <NavLink class="team-link" href="@($"clb/du-lieu/{item.SeName}")" title="@item.Name">
+                    @item.Name
+                </NavLink>
+            }
+        </td>
+        <td>
+            @if (Items is not null && Items.Count > 0)
+            {
+                var cssSafe = Css ?? string.Empty;
+                if (!string.IsNullOrEmpty(cssSafe) && (cssSafe.Contains("wrapper") || cssSafe.Contains("value")))
+                {
+                    <span class="@Css @Width">
+                        <span class="stat-bar rc-r" style="@(GetStatBar(item?.Info, Items[0]?.Info))">
+                            <span class="stat-value">@Convert.ToDecimal(item?.Info ?? "0").ToString("0.##") @(IsPercentageValue ? "%" : "")</span>
+                        </span>
+                    </span>
+                }
+                else
+                {
+                    <span class="@Css">@item?.Info</span>
+                }
+            }
+        </td>
+    </RowTemplate>
+</StatsItemTemplate>
+@code {
+    [Parameter]
+    public IReadOnlyList<StatInfo>? Items { get; set; }
+    [Parameter]
+    public string? RowHeaderTitle { get; set; }
+    [Parameter]
+    public string? Css { get; set; }
+    [Parameter]
+    public string? Width { get; set; }
+    [Parameter]
+    public string? StatValue { get; set; }
+    [Parameter]
+    public string? DivCss { get; set; }
+    [Parameter]
+    public string? StyleValue { get; set; }
+    [Parameter]
+    public bool IsPLayer { get; set; } = false;
+    [Parameter]
+    public bool IsPercentageValue { get; set; } = true;
+
+    protected string GetStatBar(string? itemInfo, string? wholeInfo)
+    {
+        // Treat null or invalid as 0; avoid division by zero.
+        bool tryParseWhole = double.TryParse((wholeInfo ?? "0").Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var whole);
+        bool tryParseItem = double.TryParse((itemInfo ?? "0").Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var itemValue);
+
+        if (!tryParseWhole || whole == 0)
+        {
+            return "width: 0%;";
+        }
+
+        var pct = (itemValue / whole) * 100;
+        return $"width: {pct}%;";
+    }
+}

@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option csharp_namespace = "eSport.TeamPlayer.API.Grpc";
+
+package teamplayer;
+
+service TeamPlayerGrpc {
+  rpc GetTeams(GetTeamsRequest) returns (GetTeamsResponse);
+}
+//message ~ dto class
+message GetTeamsRequest {
+ 
+  int32 categoryid = 1;
+  repeated int32 season_stage_ids = 2;
+}
+message GetTeamsResponse {
+  repeated GetTeamsMapping items = 1;
+}
+
+message GetTeamsMapping {
+  int32 id = 1;
+  string name = 2;
+  string se_name	= 3;
+}

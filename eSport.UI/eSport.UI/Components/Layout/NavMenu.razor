@@ -1,0 +1,248 @@
+﻿@using Blazor.Heroicons.Micro
+@using eSport.UI.Components.Pages
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@* @inject LogOutService LogOutService *@
+@* @inject IJSRuntime JS *@
+<nav class="bg-green-navBar px-8 sticky top-0 z-10">
+    <div class="flex justify-between">
+        <div class="flex-shrink-0 flex items-center">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <img class="block lg:hidden h-8 w-auto" src="/images/logo.png" alt="thethaoso.net" />
+                <img class="hidden lg:block w-auto" src="/images/logo.png" alt="thethaoso.net" />
+            </NavLink>
+        </div>
+       
+        <UseMenuCategories Context="result" >
+            <ChildContent>
+                @{
+                    var dataMenu = Menu.Find(f => f.Name == "Dữ liệu");
+                    if (dataMenu is not null)
+                    {
+                        var grouppedSubMenu = GroupArrayOfObjects(result.MenuCategories);
+
+                        foreach (var sub in grouppedSubMenu)
+                        {
+                            var list = new List<CategoryDto>();
+                            if (!dataMenu.Data.Any(a => a.Key == sub.Key))
+                            {
+                                dataMenu.Data.Add(sub.Key, list);
+                                sub.ToList().ForEach(x => list.Add(PrepareSubMenu(x)));
+                            }
+                        }
+                        SortMenu();
+                        isMenuLoaded = true;
+                    }
+                }
+
+                <div class="flex">
+                    @if (isMenuLoaded)
+                        @foreach (var item in Menu)
+                        {
+                            <div class="dropdown @(item.Selected ? "open" :"")" @onclick="@(()=>OpenMenu(item))">
+                                <NavLink class="block cursor-pointer uppercase text-white hover:bg-green-navBarHover hover:text-white  px-5  py-4  text-sm  font-medium">
+                                    @item.Name
+                                </NavLink>
+                                <ul>
+                                    @if (item.Name.Equals("Dữ liệu"))
+                                    {
+                                        @foreach (var sub in item.Data)
+                                        {
+
+                                            <li>
+                                                @foreach (var groupItem in sub.Value)
+                                                {
+
+                                                    string url = groupItem.CurrentSeasonUrl;// $"/du-lieu/tong-quan/{groupItem.SeName}/15/1";
+                                                    <div>
+                                                        <div class="@groupItem.Flag"></div>
+                                                        @if (!String.IsNullOrEmpty(url))
+                                                        {
+                                                            <NavLink href="@url">@groupItem.Name</NavLink>
+                                                        }
+                                                        else
+                                                        {
+                                                            @groupItem.Name
+                                                        }
+                                                        @* <NuxtLink :to="`/du-lieu/tong-quan/${groupItem.seName}`">{{ groupItem.name }}</NuxtLink> *@
+                                                    </div>
+
+                                                }
+                                            </li>
+                                        }
+
+                                    }
+                               
+                                   
+
+                                </ul>
+                            </div>
+
+                        }
+                   
+                    <div class="relative inline-block px-1 py-3.5">
+                        <BellAlertIcon class="h-6 w-6 text-white inline-flex w-full justify-center  text-sm font-semibold text-gray-900 shadow-sm" />
+                    </div>
+                    <div class="account @(userIsSelected ? "open" :"") relative inline-block px-1 py-3.5" @onclick="@(()=>userIsSelected=!userIsSelected)">
+                        <UserIcon class="h-6 w-6 text-white inline-flex w-full justify-center  text-sm font-semibold text-gray-900 shadow-sm" />
+                        <AuthorizeView>
+                            <Authorized>
+                                <ul class="hidden py-2 text-gray-700 dark:text-gray-200 top-12 z-10 absolute right-0 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                                    <li>
+                                        <a href="#"><UserCircleIcon class="h-6 w-6 mr-2" /> Tài khoản</a>
+                                    </li>
+                                    <li>
+                                        <a href="#"><DocumentIcon class="h-6 w-6 mr-2" /> Tường nhà</a>
+                                    </li>
+                                    <li>
+                                        <a href="#"><CurrencyDollarIcon class="h-6 w-6 mr-2" /> Điểm số</a>
+                                    </li>
+                                    <li>
+                                        <a href="#"><BookmarkIcon class="h-6 w-6 mr-2" /> Bookmarks</a>
+                                    </li>
+                                    <li>
+                                        <a href="#"><PencilIcon class="h-6 w-6 mr-2" /> Bài viết nháp</a>
+                                    </li>
+                                    <li>
+                                        <a href="#"><LockClosedIcon class="h-6 w-6 mr-2" /> Đổi mật khẩu</a>
+                                    </li>
+                                    <li>
+                                        <form class="dropdown-item" method="post" action="account/logout" @formname="logout">
+                                            <AntiforgeryToken />
+                                            <button type="submit"><LockOpenIcon class="h-6 w-6 mr-2" /> Đăng xuất</button>
+                                        </form>                                   
+                                    </li>
+                                </ul>
+                            </Authorized>
+                            @* <NotAuthorized>
+
+                                <ul class="hidden py-2 text-gray-700 dark:text-gray-200 top-12 z-10 absolute right-0 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                                    <li>
+                                        <NavLink href="@($"/account/login?redirectUri={NavigationManager.Uri}")"><UserIcon class="h-6 w-6 mr-2" /> Đăng nhập tài khoản</NavLink>
+                                    </li>
+                                    <li>
+                                        <NavLink href="/create"><UserPlusIcon class="h-6 w-6 mr-2" /> Đăng ký tài khoản</NavLink>
+                                    </li>
+
+                                </ul>
+                            </NotAuthorized>
+ *@
+                        </AuthorizeView>
+                    </div>
+
+
+                </div>
+
+
+            </ChildContent>
+            <ErrorContent>
+               
+                Something went wrong ...<br />
+                @result.First().Message
+            </ErrorContent>
+            <LoadingContent>
+                Loading ...hell
+            </LoadingContent>
+        </UseMenuCategories>
+    </div>
+</nav>
+@code {
+    private ElementReference dropDownEle;
+    private bool isMenuLoaded = false;
+    bool userIsSelected = false;
+    public record MenuItem
+    {
+        public string Name { get; set; } = string.Empty;
+        public int Order { get; set; }
+        public bool Selected { get; set; }
+        public string? Slug { get; set; }
+        public Dictionary<int, List<CategoryDto>> Data { get; set; } = new();
+    }
+    public List<MenuItem> Menu = new()
+    {
+
+        new()
+        {
+             Name= "Dữ liệu",
+             Order= 2,
+             Slug="",
+             Selected= false,
+             Data= [],
+        },
+        new()
+        {
+            Name= "Viết bài",
+            Order= 1,
+            Selected= false,
+            Slug= "",
+            Data= [],
+        },
+        new()
+        {
+             Name= "Trực tiếp",
+             Order= 3,
+             Selected= false,
+             Data= [],
+        },
+        new()
+        {
+             Name= "Fantasy Football",
+             Order= 4,
+             Selected= false,
+             Data= [],
+        },
+    };
+    private IEnumerable<IGrouping<int,
+            IMenuCategories_MenuCategories>> GroupArrayOfObjects(IReadOnlyList<IMenuCategories_MenuCategories> obj)
+    {
+        return obj.GroupBy(g => g.CountryId);
+    }
+    private CategoryDto PrepareSubMenu(IMenuCategories_MenuCategories sub)
+    {
+        return new CategoryDto()
+        {
+            CountryId = sub.CountryId,
+            Id = sub.Id,
+            Name = sub.Name,
+            SeName = sub.SeName,
+            IsTournament = sub.IsTournament,
+            CurrentSeasonUrl = sub.CurrentSeasonUrl
+        };
+    }
+
+    private void SortMenu()
+    {
+        Menu.Sort(delegate (MenuItem x, MenuItem y)
+         {
+             return x.Order > y.Order ? 1 : -1;
+         });
+    }
+    IJSObjectReference? jsModule;
+
+    public void OpenMenu(MenuItem item)
+    {
+        Menu.Where(w => w.Name != item.Name).ToList().ForEach(x => x.Selected = false);
+        item.Selected = !item.Selected;
+
+
+    }
+    // [CascadingParameter]
+    // public HttpContext? HttpContext { get; set; }
+    // private Task LogOutAsync()
+    //     => LogOutService.LogOutAsync(HttpContext!);
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         jsModule = await JS.InvokeAsync<IJSObjectReference>(
+    //                  "import", "./Components/Layout/NavMenu.razor.js");
+
+    //     }
+
+    // }
+}
+<style>
+    nav .account.open > ul {
+        display: block;
+    }
+</style>

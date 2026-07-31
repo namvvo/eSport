@@ -1,0 +1,8 @@
+{
+  "name": "MatchCentre",
+  "transports": {
+    "http": {
+      "url": "https://localhost:7268/graphql"
+    }
+  }
+}

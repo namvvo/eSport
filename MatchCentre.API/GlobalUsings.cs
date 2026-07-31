@@ -1,0 +1,17 @@
+﻿global using eSport.ServiceDefaults;
+global using eSport.ServiceDefaults.Domain;
+global using eSport.MatchCentre.API.Models;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using System.ComponentModel.DataAnnotations;
+global using eSport.MatchCentre.API.Infrastructure;
+global using eSport.MatchCentre.API.Extensions;
+global using eSport.UI.Shared;
+global using eSport.MatchCentre.API.GraphQL.Dto.Fixtures;
+//global using eSport.MatchCentre.API.GraphQL.Dto.Teams;
+global using eSport.MatchCentre.API.Services;
+global using eSport.Catalog.API.Grpc;
+global using eSport.TeamPlayer.API.Grpc;
+global using eSport.MatchCentre.API.Dto.TeamPlayer;
+global using eSport.MatchCentre.API.Dto;
+global using eSport.ServiceDefaults.Infrastructure;

@@ -1,0 +1,122 @@
+﻿@using Mapster
+@inherits LayoutComponentBase
+@layout MainLayout
+@inject eSportClient ttsClient
+@inject CurrentSeasonState _state
+
+@implements IDisposable
+@* https://stackoverflow.com/questions/71773637/blazor-cascadingparameter-is-always-null *@
+
+@if (currentSeason is not null)
+{
+  @*   <TTSWeb.UI.Components.Pages.Data.TeamsOnTop @rendermode="InteractiveServer" currentSeason="currentSeason" />
+    <TTSWeb.UI.Components.Pages.Data.TopHeaderInfo currentSeason="currentSeason" @rendermode="InteractiveServer" /> *@
+}
+@Body
+
+@code {
+    /// <summary>
+    /// get from route.razor
+    /// page is rendered twice
+    /// https://stackoverflow.com/questions/69374767/should-i-use-onafterrenderasync-instead-of-oninitializedasync
+    /// https://stackoverflow.com/questions/72773187/issues-with-using-cascading-parameters-for-passing-values
+    /// </summary>
+    [CascadingParameter]
+    RouteData? RouteData { get; set; }
+
+
+    CurrentSeasonModel? currentSeason;
+    protected override async Task OnInitializedAsync()
+    {
+
+        _state.PropertyChanged += async (s, p) => await InvokeAsync(StateHasChanged);
+        await LoadData();
+    }
+
+    public void Dispose()
+    {
+        // _state.OnChange -= StateHasChanged;
+        _state.PropertyChanged -= async (s, p) => await InvokeAsync(StateHasChanged);
+    }
+
+    async Task LoadData()
+    {
+
+        if (RouteData?.RouteValues.TryGetValue("Slug", out var slug) == true &&
+            RouteData?.RouteValues.TryGetValue("SeasonStageId", out var seasonStageId) == true )
+        {
+
+            // var results = await ttsClient.LatestSeasonsByCategory.ExecuteAsync(slug!.ToString(),
+            //                                                                    Convert.ToInt32(seasonStageId));
+            // if (results.IsSuccessResult())
+            // {
+            //     currentSeason = _state.Value;
+            //     var activeCategory = results?.Data?.LatestSeasonsByCategory.Categories.FirstOrDefault(f => f.IsActive);
+
+            //     if (activeCategory != null)
+            //     {
+
+            //         currentSeason.ActiveCategory = activeCategory.Adapt<Shared.Models.Catalog.CategoryModel>();
+            //         if (String.IsNullOrEmpty(activeCategory!.Country.CountryCSS)) throw new Exception($"{activeCategory.Country.Name} must have country css");
+            //         // if (String.IsNullOrWhiteSpace(currentSeason.ActiveCategory.Country.CountryCSS))
+            //         //     currentSeason.ActiveCategory.Country.CountryCSS = activeCategory!.Country!.CountryCSS;
+            //         currentSeason.SelectedCatId = activeCategory.Id;
+
+            //         currentSeason.ActiveCategory.Banner = new Shared.Models.Common.PictureModel()
+            //             {
+            //                 ImageUrl = activeCategory.Banner.ImageUrl,
+            //                 Title = activeCategory.Name
+            //             };
+            //     }
+
+            //     if (results?.Data?.LatestSeasonsByCategory != null
+            //         && results?.Data?.LatestSeasonsByCategory.Seasons != null)
+            //     {
+            //         currentSeason.ActiveSeasonStage = results?.Data?.LatestSeasonsByCategory.CurrentSeasonStage.Adapt<Shared.Models.Catalog.SeasonStageModel>();
+            //         currentSeason.LatestSeasonsByCategory = results?.Data?.LatestSeasonsByCategory.Adapt<LatestSeasonByCategoryModel>();
+
+            //         currentSeason.SelectedStageId = results?.Data?.LatestSeasonsByCategory.CurrentSeasonStage.StageId ?? 0;
+            //         currentSeason.SelectedSeasonId = results?.Data?.LatestSeasonsByCategory.CurrentSeasonStage.SeasonId ?? 0;
+
+            //         currentSeason.SeasonDateRange = new List<DateTime>();
+            //         foreach (var item in results?.Data?.LatestSeasonsByCategory.CurrentSeasonStage.SeasonDateLimit)
+            //             currentSeason.SeasonDateRange.Add(item.Date);
+                 
+            //         await LoadLeagueCalendar(currentSeason.ActiveCategory.Id, currentSeason.ActiveSeasonStage.SeasonStageId);
+            //         if (RouteData.Template.Contains("tong-quan"))
+            //             currentSeason.TabIndex = 0;
+            //         _state.UpdateState(currentSeason);
+            //     }
+
+
+            //     // await UpdateStorage();
+            // }
+        }
+        else
+        {
+
+        }
+        // return base.OnInitializedAsync();
+    }
+    async Task LoadLeagueCalendar(int catId, int seasonStageId)
+    {
+        var result = await ttsClient.CurrentRoundLeagueCalendar.ExecuteAsync(catId, seasonStageId);
+        result.EnsureNoErrors();
+        if (result.Data is not null &&
+           result.Data.CurrentRoundLeagueCalendar is not null)
+            this.currentSeason.LeagueCalendar = new()
+                {
+
+                    CategoryId = catId,
+                    CurrentRound = new()
+                    {
+                        Start = result.Data.CurrentRoundLeagueCalendar.CurrentRound.Start,
+                        End = result.Data.CurrentRoundLeagueCalendar.CurrentRound.End,
+                        Round = result.Data.CurrentRoundLeagueCalendar.CurrentRound.Round
+                    },
+                    // LeagueEndRound = result.Data.CurrentRoundLeagueCalendar..Adapt<TTSWeb.UI.Shared.Models.Data.RoundOfFixture>(),
+                    Rounds = result.Data.CurrentRoundLeagueCalendar.Rounds.Adapt<List<int>>()
+                };
+    }
+}
+<link href="/css/_data.css" rel="stylesheet" />

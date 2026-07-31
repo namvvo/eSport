@@ -1,0 +1,200 @@
+schema {
+  query: Query
+}
+
+type Query {
+  categories: [Category!]! @cacheControl(maxAge: 900) @cost(weight: "10")
+  categoryById(id: Int!): Category
+    @lookup
+    @cacheControl(maxAge: 0)
+    @cost(weight: "10")
+  menuCategories: [CategoryMenuDto!]!
+    @cacheControl(maxAge: 0)
+    @cost(weight: "10")
+  stageById(id: Int!): Stage @cacheControl(maxAge: 0) @cost(weight: "10")
+}
+
+type Category @key(fields: "id") {
+  name: String!
+  parentCategoryId: Int!
+  groupName: String
+  rounds: Int!
+  seName: String!
+  sofaScoreId: Int!
+  countryCSS: String
+  countryId: Int!
+  published: Boolean!
+  displayOrder: Int!
+  coefficient: Float
+  fromMonth: Int!
+  toMonth: Int!
+  metaKeywords: String
+  metaDescription: String
+  pictureId: Int!
+  pageSize: Int!
+  showOnHomePage: Boolean!
+  includeInTopMenu: Boolean!
+  deleted: Boolean!
+  createdOnUtc: DateTime!
+  updatedOnUtc: DateTime!
+  tags: String
+  uefaC1: Int
+  uefaC1Qualifiers: Int
+  europaLeagueQualifiers: Int
+  europaLeague: Int
+  relegation: Int
+  relegationPlayOff: Int
+  transfermarkt: String
+  leagueLogo: Int
+  showStanding: Boolean
+  isTournament: Boolean!
+  isData: Boolean!
+  stages: [Stage!]!
+  categoryStages: [CategoryStage!]!
+  id: Int!
+}
+
+type CategoryMenuDto {
+  id: Int!
+  name: String!
+  seName: String!
+  currentSeasonUrl: String!
+  isActive: Boolean!
+  isTournament: Boolean!
+  isSelected: Boolean!
+  isData: Boolean!
+  flag: String!
+  countryId: Int!
+}
+
+type CategoryStage {
+  stageId: Int!
+  categoryId: Int!
+  fromMonth: Int!
+  toMonth: Int!
+  fromDateUseYearPart: Int!
+  toDateUseYearPart: Int!
+  fixtureCount: Int!
+  stage: Stage!
+  category: Category!
+  id: Int!
+}
+
+type Season {
+  year: String!
+  displayOrder: Int
+  year2: Int
+  status: Boolean!
+  stages: [Stage!]!
+  seasonStages: [SeasonStage!]!
+  id: Int!
+}
+
+type SeasonStage {
+  stageId: Int!
+  seasonId: Int!
+  isComplete: Boolean!
+  status: Boolean!
+  season: Season!
+  stage: Stage!
+  id: Int!
+}
+
+type Stage {
+  name: String!
+  c1WhoscoredName: String
+  c3WhoscoredName: String
+  euroWhoscoredName: String
+  wcWhoscoredName: String
+  c1SofascoreName: String
+  c3SofascoreName: String
+  euroSofascoreName: String
+  wcSofascoreName: String
+  parentId: Int
+  groupStage: Boolean
+  displayOrder: Int!
+  noOfMatches: Int
+  round: Int!
+  display: Boolean!
+  seasons: [Season!]!
+  categories: [Category!]!
+  categoryStages: [CategoryStage!]!
+  seasonStages: [SeasonStage!]!
+  id: Int!
+}
+
+"The scope of a cache hint."
+enum CacheControlScope {
+  "The value to cache is not tied to a single user."
+  PUBLIC
+  "The value to cache is specific to a single user."
+  PRIVATE
+}
+
+enum ScalarSerializationType {
+  STRING
+  BOOLEAN
+  INT
+  FLOAT
+  OBJECT
+  LIST
+}
+
+"The `DateTime` scalar type represents a date and time with time zone offset information."
+scalar DateTime
+  @serializeAs(
+    type: STRING
+    pattern: "^\\d{4}-\\d{2}-\\d{2}[Tt]\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:[Zz]|[+-]\\d{2}:\\d{2})$"
+  )
+  @specifiedBy(url: "https://scalars.graphql.org/chillicream/date-time.html")
+
+scalar FieldSelectionSet
+
+"The `@cacheControl` directive may be provided for individual fields or entire object, interface or union types to provide caching hints to the executor."
+directive @cacheControl(
+  "The maximum amount of time this field's cached value is valid, in seconds."
+  maxAge: Int
+  "The maximum amount of time this field's cached value is valid in shared caches like CDNs, in seconds."
+  sharedMaxAge: Int
+  "If `true`, the field inherits the `maxAge` of its parent field."
+  inheritMaxAge: Boolean
+  "If `PRIVATE`, the field's value is specific to a single user. The default value is `PUBLIC`, which means the field's value is not tied to a single user."
+  scope: CacheControlScope
+  "The Vary HTTP response header describes the parts of the request message aside from the method and URL that influenced the content of the response it occurs in. Most often, this is used to create a cache key when content negotiation is in use."
+  vary: [String]
+) on OBJECT | FIELD_DEFINITION | INTERFACE | UNION
+
+"The purpose of the `cost` directive is to define a `weight` for GraphQL types, fields, and arguments. Static analysis can use these weights when calculating the overall cost of a query or response."
+directive @cost(
+  "The `weight` argument defines what value to add to the overall cost for every appearance, or possible appearance, of a type, field, argument, etc."
+  weight: String!
+) on
+  | SCALAR
+  | OBJECT
+  | FIELD_DEFINITION
+  | ARGUMENT_DEFINITION
+  | ENUM
+  | INPUT_FIELD_DEFINITION
+
+"""
+The @key directive is used to designate an entity's unique key,
+which identifies how to uniquely reference an instance of
+an entity across different source schemas.
+"""
+directive @key("The field selection set syntax." fields: FieldSelectionSet!) repeatable on
+  | OBJECT
+  | INTERFACE
+
+"""
+The @lookup directive is used within a source schema to specify output fields
+that can be used by the distributed GraphQL executor to resolve an entity by
+a stable key.
+"""
+directive @lookup on FIELD_DEFINITION
+
+directive @serializeAs(
+  "The primitive type a scalar is serialized to."
+  type: [ScalarSerializationType!]!
+  "The ECMA-262 regex pattern that the serialized scalar value conforms to."
+  pattern: String
+) on SCALAR

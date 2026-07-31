@@ -1,0 +1,89 @@
+﻿@page "/du-lieu/tong-quan/{Slug}/{SeasonStageId}"
+@rendermode InteractiveServer
+@inject CurrentSeasonState _state
+@implements IDisposable
+@inherits LayoutComponentBase
+
+@layout MainLayout
+@using System.Globalization
+
+@if (currentSeason != null && currentSeason.ActiveCategory.IsActive)
+{
+    if (!currentSeason.ActiveCategory.IsTournament)
+    {
+        <eSport.UI.Client.Pages.Common.DatePicker OnSelectDate="OnChangeDate" currentSeason="@currentSeason" IsMonth="false" />
+    }
+    @* <eSport.UI.Client.Pages.League.RecentFixtures currentSeason="@currentSeason" /> *@
+    @if (currentSeason.SelectedStageId == 1 || (currentSeason.SelectedStageId >= 3 && currentSeason.SelectedStageId <= 20 && currentSeason.SelectedStageId != 11 && currentSeason.SelectedStageId != 12))
+    {
+        @* <TTSWeb.UI.Client.Pages.League.TeamStandings currentSeason="@currentSeason" /> *@
+    }
+    if (currentSeason.ActiveCategory.IsTournament)
+    {
+        @* <TTSWeb.UI.Client.Pages.League.TeamStandingsInTournament /> *@
+    }
+    <span>chay di thoi</span>
+    <eSport.UI.Client.Pages.League.Stats currentSeason="@currentSeason" />
+   @*  <TTSWeb.UI.Client.Pages.League.TopScorers currentSeason="@currentSeason" />
+    <TTSWeb.UI.Client.Pages.League.TopPlayerStats currentSeason="@currentSeason" />
+    <TTSWeb.UI.Client.Pages.League.TeamOfTheWeek currentSeason="@currentSeason" /> *@
+
+}
+  
+@code {
+    [Parameter]
+    public string? Slug { get; set; }
+    [Parameter]
+    public string? SeasonStageId { get; set; }
+    CurrentSeasonModel? currentSeason { get; set; } = default!;  // might be wrong
+    protected override async Task OnInitializedAsync()
+    {
+
+        _state.PropertyChanged += async (s, p) => await InvokeAsync(StateHasChanged);
+        await base.OnInitializedAsync();
+    }
+    public void Dispose()
+    {
+        // _state.OnChange -= StateHasChanged;
+        _state.PropertyChanged -= async (s, p) => await InvokeAsync(StateHasChanged);
+    }
+
+    // void UpdateStorageAsync() => _state.UpdateState(currentSeason);
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                this.currentSeason = _state.Value;
+                // var result = _state.Value;// await _protected.GetAsync<CurrentSeasonModel>("currentSeason");
+                // if (result.Success)
+                // {
+                //     this.currentSeason = result.Value;
+                StateHasChanged();
+                // }
+                // else
+                // {
+                //     await UpdateStorageAsync();
+                // }
+            }
+            catch
+            {
+
+            }
+        }
+    }
+    void UpdateCurrentSeason(CurrentSeasonModel val) => this.currentSeason = val;
+    async Task OnChangeDate(string e)
+    {
+        var dateParts = e.Replace("to", "đến").Split("đến"); // hard code to avoid english on datepicker not to load vns correctly
+        if (String.IsNullOrWhiteSpace(e)) throw new ArgumentNullException("lỗi ngày");
+
+        this.currentSeason.LeagueCalendar.CurrentRound.Start = DateTime.ParseExact(dateParts[0].Trim(), "dd-MM-yyyy", CultureInfo.InvariantCulture);
+        this.currentSeason.LeagueCalendar.CurrentRound.End = DateTime.ParseExact(dateParts[1].Trim(), "dd-MM-yyyy", CultureInfo.InvariantCulture);
+    }
+}

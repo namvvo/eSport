@@ -1,0 +1,11 @@
+query menuCategories{
+  menuCategories {
+    id
+    name
+    seName
+    flag
+    countryId
+    isTournament
+    currentSeasonUrl
+  }
+}

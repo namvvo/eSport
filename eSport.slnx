@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/API/">
+    <Project Path="Catalog.API/Catalog.API.csproj" Id="f040e4eb-82d0-4373-b05d-3a4f1cd960cf" />
+    <Project Path="Catalog.Contracts/Catalog.Contracts.csproj" Id="4498edba-060e-4625-965f-33252cda950a" />
+    <Project Path="EventBus/EventBus.csproj" Id="976a71ab-481d-46f5-94b0-65621ff44ee5" />
+    <Project Path="EventBusRabbitMQ/EventBusRabbitMQ.csproj" Id="feb5c88a-f5d3-4da4-8ce9-3502e652edee" />
+    <Project Path="Fantasy.API/Fantasy.API.csproj" Id="9a31e1e6-e891-41c4-a43c-15bbd75dd238" />
+    <Project Path="Gateway.API/Gateway.API.csproj" />
+    <Project Path="Identity.API/Identity.API.csproj" Id="a2c19fcf-14ec-4897-af02-f664fa3ac7a1" />
+    <Project Path="MatchCentre.API/MatchCentre.API.csproj" Id="24a859ef-fcc2-4a8c-b85f-9337c9945727" />
+    <Project Path="MatchCentre.Contracts/MatchCentre.Contracts.csproj" Id="73500ce0-1516-4e29-83d2-c659a108806a" />
+    <Project Path="Media.API/Media.API.csproj" Id="f62e1ba4-d1a1-4aa7-9e1d-286b245e1986" />
+    <Project Path="News.API/News.API.csproj" Id="c8cf1037-4f59-433f-b6e7-bdbb5e56d2f4" />
+    <Project Path="TeamPlayer.API/TeamPlayer.API.csproj" Id="9249c9ce-f81a-4ede-a507-081fd77054fe" />
+    <Project Path="TeamPlayer.Contracts/TeamPlayer.Contracts.csproj" Id="9dfe9eb8-bdaf-4500-8210-ba737c58f9c3" />
+  </Folder>
+  <Folder Name="/Presentations/">
+    <Project Path="eSport.UI.Shared/eSport.UI.Shared.csproj" Id="4f3d7885-efd4-4952-8fe8-02c2862a0ab6" />
+    <Project Path="eSport.UI/eSport.UI.Client/eSport.UI.Client.csproj" Id="ad6a097c-6c2a-4170-af2b-349633744b4e" />
+    <Project Path="eSport.UI/eSport.UI/eSport.UI.csproj" Id="34e83804-f4cd-4191-aebf-4dcbace8d9df" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Catalog.API.Test/Catalog.API.Test.csproj" Id="b931f6a7-2dbf-48e7-9048-2a3e417cd8e5" />
+    <Project Path="eSport.Tests/eSport.Tests.csproj" />
+    <Project Path="GrpcTest/GrpcTest.csproj" />
+  </Folder>
+  <Project Path="eSport.AppHost/eSport.AppHost.csproj" />
+  <Project Path="eSport.ServiceDefaults/eSport.ServiceDefaults.csproj" />
+</Solution>

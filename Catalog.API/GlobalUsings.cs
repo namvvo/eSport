@@ -1,0 +1,9 @@
+﻿global using Npgsql;
+global using Microsoft.EntityFrameworkCore;
+global using eSport.ServiceDefaults;
+global using eSport.ServiceDefaults.Domain;
+global using eSport.Catalog.API.Models;
+global using eSport.Catalog.API.Infrastructure;
+global using eSport.Catalog.API.Infrastructure.EntityConfigurations;
+global using eSport.ServiceDefaults.Infrastructure;
+global using eSport.Catalog.API.GraphQL.Dto;

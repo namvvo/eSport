@@ -1,0 +1,58 @@
+﻿@inject IJSRuntime JS
+<div>datepicker</div>
+<div class="flatpickr">
+    <input type="text" id="week-picker" @onchange="SelectDate" data-input placeholder="Chọn ngày..."
+           class="peer bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900">
+    <a class="input-button" title="toggle" data-toggle>
+        <i class="icon-calendar"></i>
+    </a>
+
+    <a class="input-button" title="clear" data-clear>
+        <i class="icon-close"></i>
+    </a>
+</div>
+@code {
+    private IJSObjectReference? jsModule;
+    [Parameter]
+    public CurrentSeasonModel currentSeason { get; set; } = default;
+
+    [Parameter]
+    public EventCallback<string> OnSelectDate { get; set; }
+    [Parameter]
+    public bool IsMonth { get; set; } = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            jsModule = await JS.InvokeAsync<IJSObjectReference>("import",
+            "./Pages/Common/DatePicker.razor.js");
+            if (!IsMonth)
+            {
+                string[] defaultDate = [currentSeason.LeagueCalendar.CurrentRound.Start.ToString("dd-MM-yyyy"),
+                                        currentSeason.LeagueCalendar.CurrentRound.End.ToString("dd-MM-yyyy")];
+
+                string[] dateRange = [currentSeason.SeasonDateRange[0].ToString("d-MM-yyyy"),
+                                      currentSeason.SeasonDateRange[1].ToString("d-MM-yyyy")];
+                await jsModule.InvokeVoidAsync("initDatePicker", (object)defaultDate, (object)dateRange, IsMonth);
+            }
+            else
+            {
+                string[] dates = [currentSeason.SeasonDateRange[0].ToString("MM-yyyy"),
+                  currentSeason.SeasonDateRange[1].ToString("MM-yyyy")];
+                await jsModule.InvokeVoidAsync("initDatePicker", "", (object)dates, IsMonth);
+            }
+
+        }
+    }
+    async Task SelectDate(ChangeEventArgs e)
+    {
+        await this.OnSelectDate.InvokeAsync(e.Value?.ToString());
+    }
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css" />
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>

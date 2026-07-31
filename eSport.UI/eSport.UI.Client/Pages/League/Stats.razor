@@ -1,0 +1,100 @@
+﻿
+@using eSport.UI.Client.Components
+@if (currentSeason != null &&
+currentSeason.SelectedStageId > 0)
+{
+
+    <UseTeamsStatsByLeague Context="result"
+                           CategoryId="currentSeason.ActiveCategory.Id"
+                           SeasonStageId="currentSeason.ActiveSeasonStage.SeasonStageId"
+                           Strategy="ExecutionStrategy.CacheFirst">
+        <ChildContent>
+            @{
+                this.topTeamStats = result.TeamsStatsByLeague.Adapt<TopTeamStatModel>();
+                <h3 class="title-right">Thống kê đội bóng</h3>
+                <div class="grid grid-cols-12">
+                    <StatsTemplate RowHeaderTitle="Giữ bóng"
+                                   Css="stat-bar-wrapper"
+                                   Width="w80"
+                                   DivCss="col-span-4"
+                                   Items="topTeamStats.Possession">
+                    </StatsTemplate>
+                    <div class="col-span-4 ml-1 mr-1">
+                        <table class="striped">
+                            <thead>
+                                <tr>
+                                    <th class="stat-title" colspan="3">Phạm lỗi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in topTeamStats.Aggression)
+                                {
+                                    <tr>
+                                        <td class="list-key">
+                                            <NavLink class="team-link" href="@($"clb/du-lieu/{item.SeName}")" title="@item.Name">@item.Name</NavLink>
+                                        </td>
+                                        <td>
+                                            <span class="stat-value number yellow-card-box">@item.Info</span>
+                                        </td>
+                                        <td>
+                                            <span class="stat-value number red-card-box">@item.Info2</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <StatsTemplate RowHeaderTitle="Tỉ lệ thắng không chiến"
+                                   Css="stat-bar-wrapper"
+                                   Width="w70"
+                                   DivCss="col-span-4"
+                                   Items="topTeamStats.AerialDuels">
+                    </StatsTemplate>
+                    <StatsTemplate RowHeaderTitle="Shoot mỗi trận"
+                                   Css="stat-bar-wrapper value"
+                                   Width="w70"
+                                   DivCss="col-span-4"
+                                   IsPercentageValue="false"
+                                   Items="topTeamStats.ShotsPerGame">
+                    </StatsTemplate>
+
+                    <StatsTemplate RowHeaderTitle="Chuyền chính xác"
+                                   Css="stat-bar-wrapper"
+                                   Width="w80"
+                                   DivCss="col-span-4 ml-1 mr-1"
+                                   Items="topTeamStats.PassAccuracy">
+                    </StatsTemplate>
+                    <StatsTemplate RowHeaderTitle="Điểm đánh giá"
+                                   Css="stat-value number rating"
+                                   Width=""
+                                   DivCss="col-span-4"
+                                   IsPercentageValue=false
+                                   Items="topTeamStats.Ratings">
+                    </StatsTemplate>
+                </div>
+            }
+        </ChildContent>
+
+    </UseTeamsStatsByLeague>
+}
+@code {
+    [Parameter]
+    public CurrentSeasonModel? currentSeason { get; set; }
+    protected TopTeamStatModel? topTeamStats { get; set; }
+    protected string GetStatBar(string itemInfo, string wholeInfo) =>
+         ("width: " + (Convert.ToDouble(itemInfo.Replace(",", ".")) / Convert.ToDouble(wholeInfo.Replace(",", "."))) * 100 + "%;");
+
+}
+<style>
+    .w50 {
+        width: 50px;
+    }
+
+    .w70 {
+        width: 70px;
+    }
+
+    .w80 {
+        width: 80px;
+    }
+</style>

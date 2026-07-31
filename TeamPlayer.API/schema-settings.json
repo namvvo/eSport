@@ -1,0 +1,8 @@
+{
+  "name": "TeamPlayer",
+  "transports": {
+    "http": {
+      "url": "https://localhost:7167/graphql"
+    }
+  }
+}

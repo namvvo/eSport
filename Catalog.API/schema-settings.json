@@ -1,0 +1,8 @@
+{
+  "name": "Catalog",
+  "transports": {
+    "http": {
+      "url": "https://localhost:7220/graphql"
+    }
+  }
+}

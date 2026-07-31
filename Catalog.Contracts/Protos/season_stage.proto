@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option csharp_namespace = "eSport.Catalog.API.Grpc";
+
+package catalog;
+
+service SeasonStageGrpc  {
+  rpc GetTournamentStages(GetTournamentStagesRequest) returns (GetTournamentStagesResponse);
+  rpc GetSeasonStages (GetSeasonStagesRequest) returns (GetSeasonStagesResponse);
+}
+
+//message ~ dto class
+message GetSeasonStagesRequest {
+
+  // 0 means all seasons (same behavior as current C# service)
+  int32 season_id = 1;
+
+  // Empty means no stage filter
+  repeated int32 stage_ids = 2;
+}
+
+message GetSeasonStagesResponse {
+  repeated GetSeasonStageMapping items = 1;
+}
+
+message GetSeasonStageMapping {
+  int32 id = 1;
+  int32 season_id = 2;
+  int32 stage_id = 3;
+}
+
+message GetTournamentStagesRequest {
+  int32 seasonStage_id = 1;
+}
+message GetTournamentStagesResponse{
+  repeated GetTournamentStagesMapping items = 1;
+}
+
+message GetTournamentStagesMapping {
+	int32 id =1;
+	string C1WhoscoredName=2;
+}
