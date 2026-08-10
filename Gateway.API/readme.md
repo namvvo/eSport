@@ -1,0 +1,2 @@
+to create a single schema file for the gateway, you can use the following command:
+nitro fusion compose -f Catalog.API/schema.graphqls -f MatchCentre.API/schema.graphqls -f TeamPlayer.API/schema.graphqls -a Gateway.API/gateway.far

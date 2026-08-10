@@ -11,16 +11,16 @@
 		<PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.4.6" />
 		<PackageReference Include="Aspire.StackExchange.Redis" Version="13.4.6" />
 		<PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching" Version="13.4.6" />
-		<PackageReference Include="Grpc.AspNetCore" Version="2.80.0" />
-		<PackageReference Include="HotChocolate.AspNetCore" Version="16.3.0" />
-		<PackageReference Include="HotChocolate.AspNetCore.CommandLine" Version="16.3.0" />
-		<PackageReference Include="HotChocolate.Caching" Version="16.3.0" />
-		<PackageReference Include="HotChocolate.Data" Version="16.3.0" />
-		<PackageReference Include="HotChocolate.Data.EntityFramework" Version="16.3.0" />
-		<PackageReference Include="HotChocolate.PersistedOperations.Redis" Version="16.3.0" />
-		<PackageReference Include="HotChocolate.Types.Analyzers" Version="16.3.0" />
+		<PackageReference Include="Grpc.AspNetCore" Version="2.83.0" />
+		<PackageReference Include="HotChocolate.AspNetCore" Version="16.6.0" />
+		<PackageReference Include="HotChocolate.AspNetCore.CommandLine" Version="16.6.0" />
+		<PackageReference Include="HotChocolate.Caching" Version="16.6.0" />
+		<PackageReference Include="HotChocolate.Data" Version="16.6.0" />
+		<PackageReference Include="HotChocolate.Data.EntityFramework" Version="16.6.0" />
+		<PackageReference Include="HotChocolate.PersistedOperations.Redis" Version="16.6.0" />
+		<PackageReference Include="HotChocolate.Types.Analyzers" Version="16.6.0" />
 		<!--<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.9" />-->
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.9">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.10">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -30,10 +30,10 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Catalog.Contracts\Catalog.Contracts.csproj" />
-		<Protobuf Include="..\Catalog.Contracts\Protos\season_stage.proto"
-            Link="Protos\season_stage.proto"
-            GrpcServices="Both" />
+		<ProjectReference Include="..\TeamPlayer.Contracts\TeamPlayer.Contracts.csproj" />
+		<Protobuf Include="..\Catalog.Contracts\Protos\season_stage.proto" Link="Protos\season_stage.proto" GrpcServices="Both" />
 		<ProjectReference Include="..\eSport.ServiceDefaults\eSport.ServiceDefaults.csproj" />
+		<Protobuf Include="..\TeamPlayer.Contracts\Protos\team.proto" Link="Protos\team.proto" GrpcServices="Client" />
 	</ItemGroup>
 
 	<ItemGroup>

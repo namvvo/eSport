@@ -1,5 +1,7 @@
 ﻿
 
+using eSport.MatchCentre.API.Dto.Stats;
+
 namespace eSport.MatchCentre.API.Services;
 
 public interface ITeamService

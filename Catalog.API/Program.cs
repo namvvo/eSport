@@ -66,4 +66,4 @@ app.MapGraphQL();
 //}
 #endregion
 app.Run();
-//await app.RunWithGraphQLCommandsAsync(args);
+await app.RunWithGraphQLCommandsAsync(args);

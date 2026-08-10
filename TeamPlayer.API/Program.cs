@@ -15,4 +15,4 @@ app.MapGrpcService<TeamGrpcEndpoint>();
 app.MapGraphQL();
 
 app.Run();
-//await app.RunWithGraphQLCommandsAsync(args);
+await app.RunWithGraphQLCommandsAsync(args);

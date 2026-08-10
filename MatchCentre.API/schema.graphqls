@@ -4,9 +4,36 @@ schema {
 
 type Query {
   fixture(id: Int!): [Fixture!]! @cacheControl(maxAge: 0) @cost(weight: "10")
+  leaguePlayerStats(filter: LeaguePlayerStatsFilterInput!): PagedResultOfLeaguePlayerAggregateDto!
+    @cacheControl(maxAge: 0)
+    @cost(weight: "10")
   teamsStatsByLeague(categoryId: Int!, seasonStageId: Int!): TopTeamStatDto!
     @cacheControl(maxAge: 0)
     @cost(weight: "10")
+}
+
+type AttackingStats {
+  goals: Int!
+  penGoals: Int!
+  assists: Int!
+  teamGoals: Int!
+  shotsPerGame: Float!
+  shotsOnTarget: Float!
+  keyPasses: Float!
+  dribbles: Float!
+  fouled: Float!
+  offsides: Float!
+}
+
+type DefendingStats {
+  tackles: Float!
+  interceptions: Float!
+  clearances: Float!
+  blocks: Float!
+  fouls: Float!
+  ownGoals: Int!
+  aerielWon: Float!
+  dispossessed: Float!
 }
 
 type Fixture {
@@ -159,6 +186,69 @@ type FixtureStat {
   id: Int!
 }
 
+type GeneralPlayerStats {
+  yellow: Int!
+  red: Int!
+  subs: Int!
+  motm: Int!
+}
+
+type GoalkeepingStats {
+  saves: Float!
+  cleanSheets: Float!
+  goalsConceded: Float!
+  penSaves: Float!
+}
+
+type LeaguePlayerAggregateDto {
+  playerId: Int!
+  teamOwnerId: Int!
+  categoryId: Int!
+  rating: Float!
+  apps: Int!
+  countryCSS: String
+  categoryName: String
+  leaguePictureId: Int
+  playerName: String!
+  teamPosition: String
+  minPlayed: Int!
+  marketValue: Float!
+  customScore: Float!
+  general: GeneralPlayerStats!
+  attacking: AttackingStats!
+  passing: PassingStats!
+  defending: DefendingStats!
+  goalkeeping: GoalkeepingStats!
+  player: Player! @cost(weight: "10")
+  team: Team! @cost(weight: "10")
+}
+
+type PagedResultOfLeaguePlayerAggregateDto {
+  items: [LeaguePlayerAggregateDto!]!
+  totalRecords: Int!
+  pageIndex: Int!
+  pageSize: Int!
+  totalPages: Int!
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+}
+
+type PassingStats {
+  passes: Float!
+  passAccuracy: Float!
+  crosses: Float!
+  accCrosses: Float!
+  longBalls: Float!
+  throughBalls: Float!
+  psPercentage: Float!
+  avgP: Float!
+  touches: Float!
+}
+
+type Player {
+  id: Int! @shareable
+}
+
 type StatInfo {
   name: String
   info: String
@@ -184,6 +274,10 @@ type Stats {
   rating: Float!
 }
 
+type Team {
+  id: Int! @shareable
+}
+
 type TopTeamStatDto {
   possession: [StatInfo!]!
   aggression: [StatInfo!]!
@@ -191,6 +285,27 @@ type TopTeamStatDto {
   shotsPerGame: [StatInfo!]!
   passAccuracy: [StatInfo!]!
   ratings: [StatInfo!]!
+}
+
+input LeaguePlayerStatsFilterInput {
+  pageIndex: Int! = 0
+  pageSize: Int! = 50
+  countApp: Int! = 0
+  teamId: Int! = 0
+  fixtureId: Int! = 0
+  playerName: String = ""
+  categoryIds: [Int!] = []
+  seasonStageIds: Int! = 0
+  playerIds: [Int!] = []
+  minPlayed: Int! = 0
+  priceOrder: Int! = 0
+  onlyRegisteredPlayers: Boolean! = true
+  orderBy: LeaguePlayerOrderBy! = GOALS
+  direction: SortDirection! = DESC
+  timeLimit: DateTime
+  timeFrom: DateTime
+  timeTo: DateTime
+  teamPosition: String!
 }
 
 "The scope of a cache hint."
@@ -207,6 +322,24 @@ enum FixtureStatusEnum {
   CANCELED
   FINISHED
   AET
+}
+
+enum LeaguePlayerOrderBy {
+  RATING
+  GOALS
+  DEFENSE
+  OFFENSE
+  PASSING
+  MARKET_VALUE
+  APPS
+  ASSISTS
+  MINUTES
+  SAVES
+}
+
+enum SortDirection {
+  ASC
+  DESC
 }
 
 "The `DateTime` scalar type represents a date and time with time zone offset information."
@@ -238,3 +371,5 @@ directive @cost(
   | ARGUMENT_DEFINITION
   | ENUM
   | INPUT_FIELD_DEFINITION
+
+directive @shareable repeatable on OBJECT | FIELD_DEFINITION

@@ -1,9 +1,7 @@
-﻿
-@using eSport.UI.Client.Components
-@if (currentSeason != null &&
+﻿@if (currentSeason != null &&
 currentSeason.SelectedStageId > 0)
 {
-
+   
     <UseTeamsStatsByLeague Context="result"
                            CategoryId="currentSeason.ActiveCategory.Id"
                            SeasonStageId="currentSeason.ActiveSeasonStage.SeasonStageId"
@@ -33,11 +31,12 @@ currentSeason.SelectedStageId > 0)
                                         <td class="list-key">
                                             <NavLink class="team-link" href="@($"clb/du-lieu/{item.SeName}")" title="@item.Name">@item.Name</NavLink>
                                         </td>
-                                        <td>
-                                            <span class="stat-value number yellow-card-box">@item.Info</span>
-                                        </td>
+                                        
                                         <td>
                                             <span class="stat-value number red-card-box">@item.Info2</span>
+                                        </td>
+                                        <td>
+                                            <span class="stat-value number yellow-card-box">@item.Info</span>
                                         </td>
                                     </tr>
                                 }
@@ -75,7 +74,7 @@ currentSeason.SelectedStageId > 0)
             }
         </ChildContent>
 
-    </UseTeamsStatsByLeague>
+    </UseTeamsStatsByLeague> 
 }
 @code {
     [Parameter]

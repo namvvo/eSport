@@ -1,0 +1,92 @@
+﻿<h3 class="title-right">Vua phá lưới</h3>
+@if (currentSeason is not null &&
+              currentSeason?.ActiveSeasonStage.SeasonStageId > 0)
+{
+    <UseLeaguePlayerStats Filter="_filter" Context="result">
+        <ChildContent>
+            @{
+                this.playerStats = result.LeaguePlayerStats.Items;
+            }
+            <table class="standings w-full bg-white" style="margin-bottom: 0">
+                <thead>
+                    <tr>
+                        <th class="sortable px-4">ST</th>
+                        <th class="pn">Cầu thủ</th>
+                        <th class="tn">Đội bóng</th>
+                        <th class="sortable goal">Số bàn thắng/Số bàn cả đội</th>
+                        <th class="sortable con">Tỉ lệ đóng góp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var (item, index) in playerStats?.Select((value, i) => (value, i)))
+                    {
+                        <tr>
+                            <td class="o sorted">@(index+1)</td>
+                            <td class="pn">
+                                <NavLink href="@($"cauthu/{item?.Player.SeName}")" class="player-link" title="@item?.Player.Name">@item?.Player.Name</NavLink>
+                            </td>
+                            <td class="tn">
+                                <span class="tn">
+                                    <NavLink href="@($"clb/du-lieu/{item.Team.SeName}")" class="team-link" title="@item.Team.ShortName">@item.Team.ShortName</NavLink>
+                                </span>
+                            </td>
+                            <td class="value">
+                                <span class="stat-bar-wrapper" style="@GetStyle(item.Attacking.TeamGoals, MaxTeamGoals)">
+                                    <span class="stat-bar rc-r" style="@GetStyle(item.Attacking.Goals + item.Attacking.PenGoals, item.Attacking.TeamGoals)">
+                                        <span class="stat-value">@(item.Attacking.Goals + item.Attacking.PenGoals)</span>
+                                    </span>
+                                    @if (item.Attacking.TeamGoals > item.Attacking.Goals + item.Attacking.PenGoals)
+                                    {
+                                        <span class="outer-value">@item.Attacking.TeamGoals</span>
+                                    }
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                @((((item.Attacking.Goals + item.Attacking.PenGoals) / Convert.ToDouble(item.Attacking.TeamGoals)) * 100).ToString("0.##")) %
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </ChildContent>
+
+    </UseLeaguePlayerStats>
+}
+@code {
+    private LeaguePlayerStatsFilterInput _filter = new();
+    [Parameter]
+    public CurrentSeasonModel? currentSeason { get; set; }
+
+    protected IReadOnlyList<ILeaguePlayerStats_LeaguePlayerStats_Items>? playerStats { get; set; }
+
+    protected string GetStyle(int goals, int teamGoals) => $"width: {(Convert.ToDouble(goals) / teamGoals) * 100}%";
+    protected int MaxTeamGoals => playerStats?.Max(m => m.Attacking.TeamGoals) ?? 0;
+   
+    protected override void OnInitialized()
+    {
+        
+       
+    }
+
+    protected override void OnParametersSet()
+    {
+        
+        if (currentSeason?.ActiveSeasonStage is null)
+            return;
+        _filter = new()
+        {
+            CategoryIds = new[] { currentSeason?.SelectedCatId ?? 0 },
+            SeasonStageIds = currentSeason!.ActiveSeasonStage.SeasonStageId,
+            PageIndex = 0,
+            PageSize = 30,
+            CountApp = 0,
+            TeamId = 0,
+            TeamPosition = ""
+        };
+        
+    }
+    // protected override void OnAfterRender(bool firstRender)
+    // {
+    //     Console.WriteLine($"PLAYER STATS: after render {firstRender}");
+    // }
+}

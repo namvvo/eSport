@@ -12,6 +12,9 @@ type Query {
     @cacheControl(maxAge: 0)
     @cost(weight: "10")
   stageById(id: Int!): Stage @cacheControl(maxAge: 0) @cost(weight: "10")
+  latestSeasonsByCategory(slug: String!, seasonStageId: Int! = 0): LatestSeasonByCategoryDto!
+    @cacheControl(maxAge: 0)
+    @cost(weight: "10")
 }
 
 type Category @key(fields: "id") {
@@ -67,6 +70,17 @@ type CategoryMenuDto {
   countryId: Int!
 }
 
+type CategoryModel {
+  id: Int!
+  name: String!
+  seName: String!
+  isActive: Boolean!
+  isTournament: Boolean!
+  isSelected: Boolean!
+  seasonStages: [SeasonStageDto!]!
+  country: CountryModel
+}
+
 type CategoryStage {
   stageId: Int!
   categoryId: Int!
@@ -80,14 +94,37 @@ type CategoryStage {
   id: Int!
 }
 
+type CountryModel {
+  threeLetterIsoCode: String!
+  name: String!
+  countryCSS: String!
+}
+
+type LatestSeasonByCategoryDto {
+  currentSeasonStage: SeasonStageDto!
+  categories: [CategoryModel!]!
+  stages: [StageDto!]!
+  seasons: [SeasonDto!]!
+  teams: [TeamSimpleDto!]!
+}
+
 type Season {
   year: String!
   displayOrder: Int
-  year2: Int
+  year2: Int!
   status: Boolean!
   stages: [Stage!]!
   seasonStages: [SeasonStage!]!
   id: Int!
+}
+
+type SeasonDto {
+  id: Int!
+  name: String
+  year: String!
+  year2: String!
+  displayOrder: Int!
+  isActive: Boolean!
 }
 
 type SeasonStage {
@@ -98,6 +135,19 @@ type SeasonStage {
   season: Season!
   stage: Stage!
   id: Int!
+}
+
+type SeasonStageDto {
+  seasonStageId: Int!
+  year: String!
+  year2: String!
+  stageId: Int!
+  seasonId: Int!
+  stage: String!
+  categoryName: String!
+  teamId: Int!
+  team: TeamSimpleDto!
+  seasonDateLimit: [DateTime!]!
 }
 
 type Stage {
@@ -121,6 +171,21 @@ type Stage {
   categoryStages: [CategoryStage!]!
   seasonStages: [SeasonStage!]!
   id: Int!
+}
+
+type StageDto {
+  id: Int!
+  name: String!
+  round: Int!
+  isActive: Boolean!
+  display: Boolean!
+}
+
+type TeamSimpleDto {
+  teamId: Int!
+  name: String!
+  shortName: String!
+  seasonStageId: Int!
 }
 
 "The scope of a cache hint."

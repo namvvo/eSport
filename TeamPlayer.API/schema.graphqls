@@ -3,6 +3,10 @@ schema {
 }
 
 type Query {
+  playerById(id: Int!): Player
+    @lookup
+    @cacheControl(maxAge: 0)
+    @cost(weight: "10")
   categoryStubById(id: Int!): Category @lookup @cacheControl(maxAge: 0)
   teams: [Team!]! @cacheControl(maxAge: 900) @cost(weight: "10")
   teamById(id: Int!): Team @lookup @cacheControl(maxAge: 0) @cost(weight: "10")
@@ -13,7 +17,8 @@ type Category @key(fields: "id") {
   teams: [TeamDTO!]! @cacheControl(maxAge: 0) @cost(weight: "10")
 }
 
-type Player {
+type Player @key(fields: "id") {
+  id: Int! @shareable
   name: String!
   shortName: String
   birthdate: DateTime
@@ -41,7 +46,6 @@ type Player {
   updatedDate: DateTime
   teams: [Team!]!
   teamPlayers: [TeamPlayer!]!
-  id: Int!
 }
 
 type Team @key(fields: "id") {
@@ -207,3 +211,5 @@ directive @serializeAs(
   "The ECMA-262 regex pattern that the serialized scalar value conforms to."
   pattern: String
 ) on SCALAR
+
+directive @shareable repeatable on OBJECT | FIELD_DEFINITION

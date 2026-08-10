@@ -1,0 +1,65 @@
+﻿query leaguePlayerStats($filter: LeaguePlayerStatsFilterInput!) {
+  leaguePlayerStats(filter: $filter) {
+    items {
+      playerId
+      teamOwnerId
+      categoryId
+      categoryName
+      leaguePictureId
+      teamOwnerId
+      playerId
+      rating
+      apps
+      marketValue
+      attacking {
+        goals
+        penGoals
+        assists
+        keyPasses
+        shotsOnTarget
+        shotsPerGame
+        teamGoals
+      }
+      defending {
+        aerielWon
+        blocks
+        clearances
+        dispossessed
+        fouls
+        interceptions
+        ownGoals
+        tackles
+      }
+      passing {
+        accCrosses
+        avgP
+        crosses
+        longBalls
+        passAccuracy
+        passes
+        psPercentage
+        throughBalls
+        touches
+      }
+      goalkeeping {
+        saves
+      }
+     team {
+        id
+        seName
+        name
+        shortName
+      }
+      player {
+        id
+        name
+        seName
+        shortName
+      }
+    }
+    hasNextPage
+
+    pageIndex
+    pageSize
+  }
+}

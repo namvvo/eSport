@@ -3,6 +3,7 @@
 using eSport.Catalog.API.Services;
 using eSport.ServiceDefaults.APIExtensions;
 
+
 public static class Extensions
 {
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
@@ -52,7 +53,14 @@ public static class Extensions
         builder.Services.AddSingleton<RedisCache>();
         builder.Services.AddScoped<ICatalogService, CatalogService>();
         builder.Services.AddScoped<ISeasonStageService, SeasonStageService>();
-        //// REVIEW: This is done for development ease but shouldn't be here in production
+        //// REVIEW: This is done for development ease b
+        ///
+        /// 
+        /// 
+        builder.Services.AddGrpcClient<TeamPlayerGrpc.TeamPlayerGrpcClient>(o =>
+        {
+            o.Address = new Uri("https://localhost:7167"); // hoặc tên service trong .NET Aspire / Service Discovery
+        }); 
         builder.Services.AddMigration<CatalogContext>();
 
         //// Add the integration services that consume the DbContext

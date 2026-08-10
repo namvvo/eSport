@@ -1,6 +1,4 @@
-﻿using eSport.MatchCentre.API.Dto;
-
-namespace eSport.MatchCentre.API.GraphQL.Fixtures;
+﻿namespace eSport.MatchCentre.API.GraphQL.Queries.Fixtures;
 
 [QueryType]
 public static partial class FixtureQueries

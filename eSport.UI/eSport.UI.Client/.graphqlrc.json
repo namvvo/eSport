@@ -4,7 +4,6 @@
   "extensions": {
     "strawberryShake": {
       "name": "eSportClient",
-      "namespace": "eSport.UI.Client",
       "url": "https://localhost:7239/graphql/",
       "records": {
         "inputs": false,

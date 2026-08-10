@@ -6,6 +6,8 @@ package teamplayer;
 
 service TeamPlayerGrpc {
   rpc GetTeams(GetTeamsRequest) returns (GetTeamsResponse);
+  rpc GetSeasonStageIdsByCategory (GetSeasonStageIdsByCategoryRequest) returns (GetSeasonStageIdsByCategoryResponse);
+  rpc GetRegisteredPlayerIdsBySeasonStages(GetRegisteredPlayerIdsRequest) returns (GetRegisteredPlayerIdsResponse);
 }
 //message ~ dto class
 message GetTeamsRequest {
@@ -21,4 +23,20 @@ message GetTeamsMapping {
   int32 id = 1;
   string name = 2;
   string se_name	= 3;
+}
+
+message GetSeasonStageIdsByCategoryRequest {
+  int32 category_id = 1;
+}
+
+message GetSeasonStageIdsByCategoryResponse {
+  repeated int32 season_stage_ids = 1;
+}
+
+message GetRegisteredPlayerIdsRequest {
+     int32 season_stage_ids = 1;
+   
+}
+message GetRegisteredPlayerIdsResponse {
+    repeated int32 registered_player_ids = 1;
 }

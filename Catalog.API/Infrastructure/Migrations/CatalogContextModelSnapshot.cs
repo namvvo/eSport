@@ -199,7 +199,7 @@ namespace eSport.Catalog.API.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("Year2")
+                    b.Property<int>("Year2")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");

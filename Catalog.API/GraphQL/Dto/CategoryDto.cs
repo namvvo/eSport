@@ -11,7 +11,7 @@ public record CategoryModel
     public bool IsActive { get; set; }
     public bool IsTournament { get; set; }
     public bool IsSelected { get; set; }
-    public List<SeasonStageModel> SeasonStages { get; set; } = new();
+    public List<SeasonStageDto> SeasonStages { get; set; } = new();
     public CountryModel? Country { get; set; } = new();
     //public PictureModel Banner { get; set; } = new();
 }

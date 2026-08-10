@@ -21,10 +21,10 @@ public static partial class SeasonStageQueries
     //    return await service.GetCurrentSeasonStageByCategoryAsync(categoryId, ct);
     //}
     public static async Task<LatestSeasonByCategoryDto> LatestSeasonsByCategory([Service] ICatalogService _categoryService,
-                                                                            [Service] ISeasonStageService _seasonStageService,                                                                            
+                                                                            [Service] ISeasonStageService _seasonStageService,
                                                                             string slug,
                                                                             int seasonStageId = 0,
-                                                                            CancellationToken ct)
+                                                                            CancellationToken ct = default)
     {
 
 
@@ -46,7 +46,7 @@ public static partial class SeasonStageQueries
             SeasonStage? seasonStage = new();
             if (seasonStageId > 0)
             {
-                seasonStage = await _seasonStageService.GetSeasonStageMappingByIdAsync(seasonStageId, ct);
+                seasonStage = await _seasonStageService.GetSeasonStageMappingByIdAsync(seasonStageId, false, ct);
                 if (seasonStage != null)
                 {
                     seasonId = seasonStage.SeasonId;
@@ -55,14 +55,14 @@ public static partial class SeasonStageQueries
                 else throw new Exception("SeasonStage not found");
             }
 
-            var latestSeasonStages = await _seasonStageService. PrepareSeasonStageModelAsync(seasonStage);
+            var allSeasonStagesByCategory = await _seasonStageService.GetCategorySeasonStagesAsync(categoryId);
             //if (!latestSeasonStages.Any()) return new LatestSeasonByCategoryModel();
-            var orderedSeasonStages = latestSeasonStages.OrderByDescending(o => o.Year2); // most latest seasons
+            var orderedSeasonStages = allSeasonStagesByCategory.OrderByDescending(o => o.Year2); // most latest seasons
             var seasonStageModels = orderedSeasonStages.GroupBy(g => g.SeasonStageId);
 
             var currentSeasonStage = seasonStageId > 0 ? seasonStage :
                                      await _seasonStageService.GetCurrentSeasonStageByCategoryInTournamentAsync(categoryId, ct);  // cover both tournament and domestic
-                                                                                                                                  //if (currentSeasonStage.Id == 0) return new LatestSeasonByCategoryModel();
+
             if (currentSeasonStage == null) return new();
             var model = new LatestSeasonByCategoryDto()
             {
@@ -74,13 +74,13 @@ public static partial class SeasonStageQueries
                 }
 
             };
-            
-            
+
+
 
             #region categories
 
-            var categories = await _categoryService.GetCategoriesAsync();
-            var categoriesByCountry = categories.Where(w => w.IsData && w.CountryId == category.CountryId).ToList();  // all leagues in 1 country eg: bundesliga bundesliga 2...
+            var categories = await _categoryService.GetCategoriesAsync(true);
+            var categoriesByCountry = categories.Where(w => w.CountryId == category.CountryId).ToList();  // all leagues in 1 country eg: bundesliga bundesliga 2...
 
             if (categoriesByCountry.Any())
             {
@@ -142,22 +142,18 @@ public static partial class SeasonStageQueries
                     IsActive = s.Id == model.CurrentSeasonStage.StageId,
                     Display = s.Display
                 });
-            foreach (var seasonStageModel in seasonStageModels)
+            foreach (var ss in allSeasonStagesByCategory)
             {
-                var ssm = await _seasonStageService.GetSeasonStageMappingByIdAsync(seasonStageModel.Key, true);
-
-                if (model.Seasons.Count(c => c.Id == ssm.SeasonId) == 0)
-                    model.Seasons.Add(new SeasonDto()
-                    {
-                        Id = ssm.SeasonId,
-                        Year = ssm.Season.Year,
-                        IsActive = ssm.SeasonId == model.CurrentSeasonStage.SeasonId,
-                        Year2 = ssm.Season.Year2,
-                        DisplayOrder = ssm.Season.DisplayOrder
-
-                    });
-
+                model.Seasons.Add(new SeasonDto()
+                {
+                    Id = ss.SeasonId,
+                    Year = ss.Year,
+                    //IsActive = ss.SeasonId == model.CurrentSeasonStage.SeasonId,
+                    Year2 = ss.Year2,
+                    //DisplayOrder = ss.Key.DisplayOrder
+                });
             }
+
             #endregion
             #region seasons
             var season = await _seasonStageService.GetSeasonByIdAsync(model.CurrentSeasonStage.SeasonId);
@@ -199,21 +195,9 @@ public static partial class SeasonStageQueries
 
             throw new Exception(e.Message);
         }
-           
+
         //});
         //return cacheItems;
     }
-    private static async Task<SeasonStageDto> PrepareSeasonStageModelAsync(SeasonStage x)
-    {
 
-        return await Task.FromResult(new SeasonStageDto
-        {
-            SeasonStageId = x.Id,
-            Year = x.Season.Year,
-            Year2 = x.Season.Year2,
-            SeasonId = x.SeasonId,
-            StageId = x.StageId,
-            //Category = await PrepareCategoryModelAsync(categoryId)
-        });
-    }
 }

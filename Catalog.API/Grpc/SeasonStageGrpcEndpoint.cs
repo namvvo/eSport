@@ -14,9 +14,10 @@ public sealed class SeasonStageGrpcEndpoint : SeasonStageGrpc.SeasonStageGrpcBas
     {
         var response = new GetSeasonStagesResponse();
         var data = await _seasonStageService.GetSeasonStagesAsync(
-           ct.CancellationToken,
+           
            request.SeasonId,
-           request.StageIds.ToList()
+           request.StageIds.ToList(),
+           ct.CancellationToken
            );
         return MapToSeasonStagesResponse(data);
     }

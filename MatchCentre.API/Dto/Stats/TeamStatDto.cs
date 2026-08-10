@@ -1,4 +1,4 @@
-﻿namespace eSport.MatchCentre.API.Dto.TeamPlayer;
+﻿namespace eSport.MatchCentre.API.Dto.Stats;
 
 public sealed class TeamStatDto
 {

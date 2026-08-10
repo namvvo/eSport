@@ -7,11 +7,27 @@ type Query {
   categoryById(id: Int!): Category
   categoryStubById(id: Int!): Category
   fixture(id: Int!): [Fixture!]!
+  latestSeasonsByCategory(seasonStageId: Int! = 0, slug: String!): LatestSeasonByCategoryDto!
+  leaguePlayerStats(filter: LeaguePlayerStatsFilterInput!): PagedResultOfLeaguePlayerAggregateDto!
   menuCategories: [CategoryMenuDto!]!
+  playerById(id: Int!): Player
   stageById(id: Int!): Stage
   teamById(id: Int!): Team
   teams: [Team!]!
   teamsStatsByLeague(categoryId: Int!, seasonStageId: Int!): TopTeamStatDto!
+}
+
+type AttackingStats {
+  assists: Int!
+  dribbles: Float!
+  fouled: Float!
+  goals: Int!
+  keyPasses: Float!
+  offsides: Float!
+  penGoals: Int!
+  shotsOnTarget: Float!
+  shotsPerGame: Float!
+  teamGoals: Int!
 }
 
 type Category {
@@ -68,6 +84,17 @@ type CategoryMenuDto {
   seName: String!
 }
 
+type CategoryModel {
+  country: CountryModel
+  id: Int!
+  isActive: Boolean!
+  isSelected: Boolean!
+  isTournament: Boolean!
+  name: String!
+  seasonStages: [SeasonStageDto!]!
+  seName: String!
+}
+
 type CategoryStage {
   category: Category!
   categoryId: Int!
@@ -79,6 +106,23 @@ type CategoryStage {
   stageId: Int!
   toDateUseYearPart: Int!
   toMonth: Int!
+}
+
+type CountryModel {
+  countryCSS: String!
+  name: String!
+  threeLetterIsoCode: String!
+}
+
+type DefendingStats {
+  aerielWon: Float!
+  blocks: Float!
+  clearances: Float!
+  dispossessed: Float!
+  fouls: Float!
+  interceptions: Float!
+  ownGoals: Int!
+  tackles: Float!
 }
 
 type Fixture {
@@ -231,6 +275,73 @@ type FixtureStat {
   yellowRed: Int!
 }
 
+type GeneralPlayerStats {
+  motm: Int!
+  red: Int!
+  subs: Int!
+  yellow: Int!
+}
+
+type GoalkeepingStats {
+  cleanSheets: Float!
+  goalsConceded: Float!
+  penSaves: Float!
+  saves: Float!
+}
+
+type LatestSeasonByCategoryDto {
+  categories: [CategoryModel!]!
+  currentSeasonStage: SeasonStageDto!
+  seasons: [SeasonDto!]!
+  stages: [StageDto!]!
+  teams: [TeamSimpleDto!]!
+}
+
+type LeaguePlayerAggregateDto {
+  apps: Int!
+  attacking: AttackingStats!
+  categoryId: Int!
+  categoryName: String
+  countryCSS: String
+  customScore: Float!
+  defending: DefendingStats!
+  general: GeneralPlayerStats!
+  goalkeeping: GoalkeepingStats!
+  leaguePictureId: Int
+  marketValue: Float!
+  minPlayed: Int!
+  passing: PassingStats!
+  player: Player!
+  playerId: Int!
+  playerName: String!
+  rating: Float!
+  team: Team!
+  teamOwnerId: Int!
+  teamPosition: String
+}
+
+type PagedResultOfLeaguePlayerAggregateDto {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  items: [LeaguePlayerAggregateDto!]!
+  pageIndex: Int!
+  pageSize: Int!
+  totalPages: Int!
+  totalRecords: Int!
+}
+
+type PassingStats {
+  accCrosses: Float!
+  avgP: Float!
+  crosses: Float!
+  longBalls: Float!
+  passAccuracy: Float!
+  passes: Float!
+  psPercentage: Float!
+  throughBalls: Float!
+  touches: Float!
+}
+
 type Player {
   attackIndexInLast6Rounds: Int
   birthdate: DateTime
@@ -269,7 +380,16 @@ type Season {
   stages: [Stage!]!
   status: Boolean!
   year: String!
-  year2: Int
+  year2: Int!
+}
+
+type SeasonDto {
+  displayOrder: Int!
+  id: Int!
+  isActive: Boolean!
+  name: String
+  year: String!
+  year2: String!
 }
 
 type SeasonStage {
@@ -280,6 +400,19 @@ type SeasonStage {
   stage: Stage!
   stageId: Int!
   status: Boolean!
+}
+
+type SeasonStageDto {
+  categoryName: String!
+  seasonDateLimit: [DateTime!]!
+  seasonId: Int!
+  seasonStageId: Int!
+  stage: String!
+  stageId: Int!
+  team: TeamSimpleDto!
+  teamId: Int!
+  year: String!
+  year2: String!
 }
 
 type Stage {
@@ -303,6 +436,14 @@ type Stage {
   seasonStages: [SeasonStage!]!
   wcSofascoreName: String
   wcWhoscoredName: String
+}
+
+type StageDto {
+  display: Boolean!
+  id: Int!
+  isActive: Boolean!
+  name: String!
+  round: Int!
 }
 
 type StatInfo {
@@ -413,6 +554,13 @@ type TeamPlayer {
   teamId: Int!
 }
 
+type TeamSimpleDto {
+  name: String!
+  seasonStageId: Int!
+  shortName: String!
+  teamId: Int!
+}
+
 type TopTeamStatDto {
   aerialDuels: [StatInfo!]!
   aggression: [StatInfo!]!
@@ -420,6 +568,27 @@ type TopTeamStatDto {
   possession: [StatInfo!]!
   ratings: [StatInfo!]!
   shotsPerGame: [StatInfo!]!
+}
+
+input LeaguePlayerStatsFilterInput {
+  categoryIds: [Int!] = []
+  countApp: Int! = 0
+  direction: SortDirection! = DESC
+  fixtureId: Int! = 0
+  minPlayed: Int! = 0
+  onlyRegisteredPlayers: Boolean! = true
+  orderBy: LeaguePlayerOrderBy! = GOALS
+  pageIndex: Int! = 0
+  pageSize: Int! = 50
+  playerIds: [Int!] = []
+  playerName: String = ""
+  priceOrder: Int! = 0
+  seasonStageIds: Int! = 0
+  teamId: Int! = 0
+  teamPosition: String!
+  timeFrom: DateTime
+  timeLimit: DateTime
+  timeTo: DateTime
 }
 
 "The scope of a cache hint."
@@ -438,6 +607,19 @@ enum FixtureStatusEnum {
   AET
 }
 
+enum LeaguePlayerOrderBy {
+  RATING
+  GOALS
+  DEFENSE
+  OFFENSE
+  PASSING
+  MARKET_VALUE
+  APPS
+  ASSISTS
+  MINUTES
+  SAVES
+}
+
 enum ScalarSerializationType {
   STRING
   BOOLEAN
@@ -445,6 +627,11 @@ enum ScalarSerializationType {
   FLOAT
   OBJECT
   LIST
+}
+
+enum SortDirection {
+  ASC
+  DESC
 }
 
 "The `DateTime` scalar type represents a date and time with time zone offset information."

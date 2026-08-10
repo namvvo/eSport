@@ -6,4 +6,5 @@ public interface ICatalogService
     Task<Category> GetCategoryByIdAsync(int id);
     Task<IList<CategoryMenuDto>> GetMenuCategoriesAsync(CancellationToken ct);
     Task<IList<Category>> GetCategoriesAsync(bool isData = false);
+    
 }

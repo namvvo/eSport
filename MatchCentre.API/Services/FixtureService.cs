@@ -1,6 +1,4 @@
 ﻿
-using eSport.MatchCentre.API.Dto;
-using Grpc.Net.Client;
 namespace eSport.MatchCentre.API.Services;
 
 
@@ -8,12 +6,7 @@ public class FixtureService : IFixtureService
 {
     private readonly FixtureContext _db;
 
-    ///// <summary>
-    ///// gRPC client contracts
-    ///// </summary>
-    //private SeasonStageGrpc.SeasonStageGrpcClient _seasonStageGrpcClient;
-    //private TeamPlayerGrpc.TeamPlayerGrpcClient _teamPlayerGrpcClient;
-    private GrpcChannel _channel;
+    
     public FixtureService(FixtureContext db)
     {
         _db = db;
@@ -324,16 +317,16 @@ public class FixtureService : IFixtureService
     //    return _seasonStageGrpcClient;
     //}
 
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _channel?.Dispose();
-        }
-    }
+    //protected virtual void Dispose(bool disposing)
+    //{
+    //    if (disposing)
+    //    {
+    //        _channel?.Dispose();
+    //    }
+    //}
 
-    ~FixtureService()
-    {
-        Dispose(false);
-    }
+    //~FixtureService()
+    //{
+    //    Dispose(false);
+    //}
 }

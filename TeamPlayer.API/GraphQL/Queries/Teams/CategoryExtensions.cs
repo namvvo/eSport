@@ -1,10 +1,11 @@
-﻿
+﻿using eSport.TeamPlayer.API.GraphQL.Teams;
 using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
 using System.Text.Json;
 
-namespace eSport.TeamPlayer.API.GraphQL.Teams;
+namespace eSport.TeamPlayer.API.GraphQL.Queries.Teams;
 
+using eSport.TeamPlayer.API.Dto.Teams;
 using HotChocolate.Caching.Memory;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;

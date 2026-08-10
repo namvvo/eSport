@@ -4,14 +4,14 @@
 @implements IDisposable
 @inherits LayoutComponentBase
 
-@layout MainLayout
 @using System.Globalization
+
 
 @if (currentSeason != null && currentSeason.ActiveCategory.IsActive)
 {
     if (!currentSeason.ActiveCategory.IsTournament)
     {
-        <eSport.UI.Client.Pages.Common.DatePicker OnSelectDate="OnChangeDate" currentSeason="@currentSeason" IsMonth="false" />
+        @* <eSport.UI.Client.Pages.Common.DatePicker OnSelectDate="OnChangeDate" currentSeason="@currentSeason" IsMonth="false" /> *@
     }
     @* <eSport.UI.Client.Pages.League.RecentFixtures currentSeason="@currentSeason" /> *@
     @if (currentSeason.SelectedStageId == 1 || (currentSeason.SelectedStageId >= 3 && currentSeason.SelectedStageId <= 20 && currentSeason.SelectedStageId != 11 && currentSeason.SelectedStageId != 12))
@@ -22,10 +22,9 @@
     {
         @* <TTSWeb.UI.Client.Pages.League.TeamStandingsInTournament /> *@
     }
-    <span>chay di thoi</span>
-    <eSport.UI.Client.Pages.League.Stats currentSeason="@currentSeason" />
-   @*  <TTSWeb.UI.Client.Pages.League.TopScorers currentSeason="@currentSeason" />
-    <TTSWeb.UI.Client.Pages.League.TopPlayerStats currentSeason="@currentSeason" />
+     <eSport.UI.Client.Pages.League.Stats currentSeason="@currentSeason" /> 
+    <eSport.UI.Client.Pages.League.TopScorers currentSeason="@currentSeason" />
+    @*<TTSWeb.UI.Client.Pages.League.TopPlayerStats currentSeason="@currentSeason" />
     <TTSWeb.UI.Client.Pages.League.TeamOfTheWeek currentSeason="@currentSeason" /> *@
 
 }

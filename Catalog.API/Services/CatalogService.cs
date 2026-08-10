@@ -8,16 +8,19 @@ namespace eSport.Catalog.API.Services
         private readonly CatalogContext _db;
         private readonly RedisCache _cached;
         private readonly ISeasonStageService _seasonStageService;
+       
         public CatalogService(CatalogContext db,
             RedisCache cache,
-            ISeasonStageService seasonStageService)
+            ISeasonStageService seasonStageService
+            )
         {
             _db = db;
             _cached = cache;
             _seasonStageService = seasonStageService;
+           
         }
-        
-        public async Task<Category> GetCategoryBySlugAsync (string slug)
+
+        public async Task<Category> GetCategoryBySlugAsync(string slug)
         {
             if (string.IsNullOrEmpty(slug))
                 throw new ArgumentException("Slug cannot be null or empty", nameof(slug));
@@ -25,7 +28,7 @@ namespace eSport.Catalog.API.Services
             return await _db.Categories.FirstOrDefaultAsync(c => c.SeName == slug)
                    ?? throw new System.Collections.Generic.KeyNotFoundException($"Category with slug {slug} not found.");
         }
-        
+
         public async Task<Category> GetCategoryByIdAsync(int id)
         {
             //if(id < 0) throw new ArgumentOutOfRangeException(nameof(id));
@@ -87,11 +90,27 @@ namespace eSport.Catalog.API.Services
 
         public async Task<IList<Category>> GetCategoriesAsync(bool isData = false)
         {
-            
-                return isData ? await _db.Categories.Where(w => w.IsData).ToListAsync() :
-                                await _db.Categories.ToListAsync();
-            
+
+            return isData ? await _db.Categories.Where(w => w.IsData).ToListAsync() :
+                            await _db.Categories.ToListAsync();
+
         }
+
+       
+        //private SeasonStageGrpc.SeasonStageGrpcClient GetSeasonStageGrpcClient()
+        //{
+        //    if (_seasonStageGrpcClient is not null)
+        //    {
+        //        return _seasonStageGrpcClient;
+        //    }
+
+        //    _channel = GrpcChannel.ForAddress("https://localhost:7220");
+
+        //    _seasonStageGrpcClient = new SeasonStageGrpc.SeasonStageGrpcClient(_channel);
+
+        //    return _seasonStageGrpcClient;
+        //}
+
 
     }
 }

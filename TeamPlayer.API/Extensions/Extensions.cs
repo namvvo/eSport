@@ -18,6 +18,8 @@ public static class Extensions
         builder.AddRedisDistributedCache("redis");
 
         builder.AddNpgsqlDbContext<TeamPlayerContext>("teamplayerdb");
+
+
         builder.Services
     .AddHttpClient("fusion")
     .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
@@ -26,13 +28,14 @@ public static class Extensions
     });
         var graphQLBuilder = builder.Services
                .AddGraphQLServer("TeamPlayer")
-               .AddQueryType(d => d.Name("Query"))
+               .AddQueryType()
                .AddTeamPlayerTypes()
-               .UseAutomaticPersistedOperationPipeline()
-              .AddRedisOperationDocumentStorage(_ =>
-        ConnectionMultiplexer.Connect(
-            builder.Configuration.GetConnectionString("redis")!)
-        .GetDatabase())
+                //.AddDbContextCursorPagingProvider()
+               //.UseAutomaticPersistedOperationPipeline()
+               //      .AddRedisOperationDocumentStorage(_ =>
+               //ConnectionMultiplexer.Connect(
+               //    builder.Configuration.GetConnectionString("redis")!)
+               //.GetDatabase())
                .AddCacheControl()
                .AddProjections()
                .AddFiltering()

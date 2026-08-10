@@ -1,0 +1,440 @@
+﻿/***********************fixtures***************************/
+.viewbet, .statistical {
+  background: #89cb29;
+  border-radius: 2px;
+  padding: 5px;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 9px;
+  margin: 0 3px;
+  white-space: nowrap;
+}
+.viewbet .viewbet:hover, .viewbet .viewbet:focus,
+.viewbet .statistical:hover, .viewbet .statistical:focus, .statistical .viewbet:hover, .statistical .viewbet:focus,
+.statistical .statistical:hover, .statistical .statistical:focus {
+  background: #57961c;
+  color: #fff;
+}
+
+.icon-video .fa, .icon-image .fa {
+  color: #89cb29;
+  margin: 0 5px;
+}
+
+/***************fixture table*******************/
+table.fixture {
+  @apply w-full;
+}
+
+table.fixture > tbody > tr > th.rowgroupheader {
+  @apply bg-black-rowHeader text-white pl-2 py-1;
+}
+
+table {
+  margin-bottom: 0;
+}
+table > tbody > tr > td.time {
+  text-align: left;
+  width: 150px;
+}
+table > tbody > tr > td.leaguelogo {
+  width: 40px;
+}
+table .rowgroupheader {
+  text-align: left;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+table > tbody > tr.group > td {
+  background: #e1e1e1;
+}
+table > tbody > tr > td.selection {
+  width: 25px;
+}
+table > tbody > tr > td.status {
+  width: 75px;
+}
+table > tbody > tr > td.topmatch-column {
+  width: 30px;
+}
+table > tbody > tr > td.topmatch-column .status-1 {
+  display: none;
+}
+table > tbody > tr > td.status-last .comment {
+  font-size: 12px;
+  color: #999;
+  white-space: nowrap;
+}
+table > tbody > tr > td.status-last {
+  text-align: right;
+}
+table span.leaguelogo, table .fix-livematch > tbody > tr > td.leaguelogo {
+  width: 40px;
+}
+table span.leaguelogo img, table .fix-livematch > tbody > tr > td.leaguelogo img {
+  height: 30px;
+}
+table > tbody > tr > td.result a {
+  white-space: nowrap;
+}
+table > tbody > tr > td.home {
+  text-align: right;
+}
+table > tbody > tr > td.away {
+  text-align: left;
+}
+table > tbody > tr > td.result {
+  width: 80px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.result-1, .result .result-2 {
+  color: #fff;
+  border-radius: 3px;
+  padding: 0 5px;
+  display: block;
+}
+.result-1 {
+  background: #eb5b14;
+}
+.result-2 {
+  background: #8dc63f;
+}
+
+/*************end fixture*****************************/
+.breadcrumb-nav {
+  padding: 10px;
+  background: #e5e5e5;
+}
+.breadcrumb-nav a {
+  color: #57961c;
+  font-weight: 700;
+}
+.breadcrumb-nav select.form-control {
+  display: unset;
+  max-width: 350px;
+}
+.breadcrumb-nav select.seasons {
+  width: 140px;
+}
+
+.stat-bar-wrapper, .stat-bar-wrapper .stat-bar {
+  border-radius: 3px;
+  display: inline-block;
+  height: 1.4em;
+  line-height: 1.4em;
+  text-align: left;
+}
+
+.stat-bar-wrapper {
+  background-color: #d5e8b2;
+  position: relative;
+}
+.stat-bar-wrapper .outer-value {
+  position: absolute;
+  right: 0.2em;
+  vertical-align: middle;
+  font-weight: bold;
+  color: #666;
+}
+.stat-bar-wrapper .stat-bar {
+  background-color: #93c73f;
+  text-indent: 0.2em;
+  vertical-align: top !important;
+}
+.stat-bar-wrapper.value .stat-bar {
+  background-color: #008bdf;
+}
+.stat-bar-wrapper.value {
+  background: none;
+}
+
+.stat-value {
+  border-radius: 3px;
+  color: #ffffff;
+  font-weight: bold;
+}
+.stat-value.number {
+  color: #ffffff;
+  display: block;
+  text-align: center;
+  width: 3em;
+}
+.stat-value.number.rating {
+  background-color: #EB5B14 !important;
+}
+
+.yellow-card-box {
+  background-color: #FFCC05 !important;
+  color: #666666 !important;
+}
+
+.red-card-box {
+  background-color: #CA2027 !important;
+  color: #FFFFFF !important;
+}
+
+table.striped {
+  @apply bg-white w-full;
+}
+table.striped > thead {
+  @apply bg-gray-800 text-white;
+}
+table.striped > thead > tr > th.stat-title {
+  @apply text-left pl-2;
+}
+table.striped > tbody > tr:nth-child(even) {
+  background: #f0f0f0;
+}
+table.striped > tbody > tr:nth-child(odd) {
+  background: #fff;
+}
+table.striped > tbody > tr {
+  @apply hover:bg-gray-300;
+}
+table.striped > tbody > tr > td {
+  @apply py-2;
+}
+table.striped > tbody > tr > td.list-key {
+  @apply pl-2 w-7/12 text-left;
+}
+
+/*************end stats**************************/
+table .box {
+  display: inline-block;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  width: 2em !important;
+}
+
+table .form .box {
+  border-radius: 3px;
+  color: #FFFFFF !important;
+  margin-bottom: 2px;
+  font-size: 13px;
+  margin-right: 3px;
+}
+table .form .box.w {
+  background-color: #6CC72A;
+}
+table .form .box.d {
+  background-color: #B8B8B8;
+}
+table .form .box.l {
+  background-color: #FF5B00;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+.blink {
+  animation: blink 1s step-start 0s infinite;
+}
+
+/*************************************************/
+.ui-icon {
+  background-repeat: no-repeat;
+  display: block;
+  height: 16px;
+  overflow: hidden;
+  text-indent: -99999px;
+  width: 16px;
+}
+
+.incident, .home-incident, .away-incident {
+  display: flex;
+  margin: 0 5px;
+}
+
+.incident {
+  justify-content: center;
+  align-items: center;
+}
+
+.incidents-icon, .incident .player-link {
+  margin: 0 2px;
+}
+
+.incidents-icon.mom {
+  background-position: 0px 0px;
+}
+
+.incidents-icon.goal, .incidents-icon.i-goal {
+  background-position: 0px -16px;
+}
+
+.incident-icon[data-event-satisfier-goalown], .incidents-icon.owngoal {
+  background-position: 0px -32px;
+}
+
+.incident-icon[data-event-satisfier-penaltyscored], .incident-icon[data-event-satisfier-penaltyshootoutscored], .incidents-icon.penalty-goal {
+  background-position: 0 -48px;
+}
+
+.incident-icon[data-event-satisfier-penaltymissed], .incident-icon[data-event-satisfier-penaltyshootoutsaved], .incident-icon[data-event-satisfier-penaltyshootoutmissedofftarget], .incidents-icon.penalty-missed {
+  background-position: 0 -64px;
+}
+
+.incident-icon[data-event-satisfier-assist], .incidents-icon.assist {
+  background-position: 0px -80px;
+}
+
+.incident-icon[data-event-satisfier-tacklelastman], .incidents-icon.last-man-tackle {
+  background-position: 0px -96px;
+}
+
+.incident-icon[data-event-satisfier-clearanceofftheline], .incidents-icon.clearance-off-line {
+  background-position: 0px -112px;
+}
+
+.incident-icon[data-event-satisfier-yellowcard], .incident-icon[data-event-satisfier-voidyellowcard], .incidents-icon.yellow, .incidents-icon.i-ycard {
+  background-position: 0px -128px;
+}
+
+.incident-icon[data-event-satisfier-redcard], .incidents-icon.red, .incidents-icon.i-rcard {
+  background-position: 0px -144px;
+}
+
+.incident-icon[data-event-satisfier-subon], .incidents-icon.subst-in, .incidents-icon.i-subi {
+  background-position: 0 -160px;
+}
+
+.incident-icon[data-event-satisfier-suboff], .incidents-icon.subst-out, .incidents-icon.i-subo {
+  background-position: 0px -176px;
+}
+
+.incident-icon[data-event-satisfier-secondyellow], .incidents-icon.secondyellow, .incidents-icon.i-y2card {
+  background-position: 0 -208px;
+}
+
+.incident-icon[data-event-satisfier-errorleadstogoal], .incidents-icon.error-lead-to-goal {
+  background-position: 0px -224px;
+}
+
+.incident-icon[data-event-satisfier-shotonpost], .incidents-icon.shotonpost {
+  background-position: 0px -240px;
+}
+
+.incident-icon[data-event-satisfier-keeperpenaltysaved], .incidents-icon.penalty-save {
+  background-position: 0px -256px;
+}
+
+.incidents-icon {
+  background-image: url(https://d2zywfiolv4f83.cloudfront.net/img/WSIcons/Icons.svg?v=2);
+  background-repeat: no-repeat;
+  width: 1rem;
+  height: 1rem;
+}
+
+.rcard {
+  padding: 0 0.25em;
+  width: 1em;
+  height: 1.5em;
+  text-align: center;
+  font-weight: bold;
+  color: #fff;
+  background-color: #CC0000;
+}
+
+.rating90 {
+  background-color: rgb(2, 192, 171) !important;
+}
+
+.rating80 {
+  background-color: rgb(0, 224, 0) !important;
+}
+
+.rating70 {
+  background-color: #8bc34a !important;
+}
+
+.rating65 {
+  background-color: #cddc39 !important;
+}
+
+.rating60 {
+  background-color: rgb(245, 147, 0) !important;
+}
+
+.ratingWorst {
+  background-color: rgb(255, 29, 37) !important;
+}
+
+.btn-follow svg:hover {
+  fill: rgb(10, 141, 255);
+}
+
+/****************player********************/
+.player-info {
+  flex: 0 0 31%;
+  @apply text-center flex-wrap;
+}
+.player-info .text {
+  @apply text-sm text-gray-500;
+}
+.player-info .value {
+  @apply text-yellow-500 font-semibold text-lg;
+}
+
+.card-body {
+  display: flex;
+  width: 100%;
+  flex: 1 1 auto;
+  padding: var(--padding-card, 2rem);
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.avatar > div {
+  display: block;
+  overflow: hidden;
+}
+
+.autocomplete .playerSearch {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: flex;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  border-bottom: 1px solid grey;
+}
+.autocomplete .playerSearch input {
+  width: 100%;
+  border: none;
+  padding: 4px;
+  outline: none;
+  background: rgb(241, 242, 245);
+}
+.autocomplete .playerSearch-results {
+  padding: 0;
+  margin: 0;
+  border: 1px solid #eeeeee;
+  height: 120px;
+  min-height: 1em;
+  max-height: 6em;
+  overflow: auto;
+}
+.autocomplete .playerSearch-result {
+  list-style: none;
+  text-align: left;
+  padding: 4px 2px;
+  cursor: pointer;
+}
+
+.autocomplete-results li {
+  @apply mb-2;
+}
+.autocomplete-results li:hover {
+  color: white;
+  @apply bg-green-navTabs;
+}

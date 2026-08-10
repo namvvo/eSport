@@ -1,6 +1,8 @@
 ﻿
+using eSport.MatchCentre.API.Dto.Stats;
 using Grpc.Net.Client;
 using HotChocolate.Caching.Memory;
+using OpenTelemetry.Resources;
 using StackExchange.Redis;
 using System.Diagnostics;
 using System.Text.Json;
@@ -9,15 +11,16 @@ namespace eSport.MatchCentre.API.Services
 {
     public class TeamService : ITeamService
     {
-        private SeasonStageGrpc.SeasonStageGrpcClient _seasonStageGrpcClient;
-        private TeamPlayerGrpc.TeamPlayerGrpcClient _teamPlayerGrpcClient;
-        private readonly FixtureContext _db;
-        private GrpcChannel _channel;
+        private readonly SeasonStageGrpc.SeasonStageGrpcClient _seasonStageGrpcClient;
+        private readonly TeamPlayerGrpc.TeamPlayerGrpcClient _teamPlayerGrpcClient;
+        private readonly FixtureContext _db;       
         private readonly RedisCache _cached;
         private readonly ILogger _logger;
-        public TeamService(FixtureContext db, 
+        public TeamService(FixtureContext db,
             RedisCache cached,
-            ILogger<TeamService> logger
+            ILogger<TeamService> logger,
+            SeasonStageGrpc.SeasonStageGrpcClient seasonStageGrpcClient,
+            TeamPlayerGrpc.TeamPlayerGrpcClient teamPlayerGrpcClient
              )
         {
 
@@ -25,6 +28,8 @@ namespace eSport.MatchCentre.API.Services
             _db = db;
             _cached = cached;
             _logger = logger;
+            _seasonStageGrpcClient = seasonStageGrpcClient;
+            _teamPlayerGrpcClient = teamPlayerGrpcClient;
         }
         public async Task<TopTeamStatDto> GetTopTeamStatsAsync(int categoryId, int seasonStageId, CancellationToken ct)
         {
@@ -49,7 +54,7 @@ namespace eSport.MatchCentre.API.Services
                     seasonStageIds.Add(seasonStageId);
                 }
 
-              
+
                 var model = new TopTeamStatDto();
                 var teamsStats = await GetTeamStatsAsync(new List<int> { categoryId }, seasonStageIds, hasScore: 1);
                 _logger.LogInformation("teamsStats {Elapsed}", sw.ElapsedMilliseconds);
@@ -88,11 +93,24 @@ namespace eSport.MatchCentre.API.Services
                         x => Math.Round(x.AerialWonPS, 2).ToString(),
                         teamLookup);
 
-                    model.Aggression = BuildTopStats(
-                        teamsStats,
-                        x => x.AggressionY + x.AggressionR * 2,
-                        x => (x.AggressionY + x.AggressionR * 2).ToString(),
-                        teamLookup);
+                    //model.Aggression = BuildTopStats(
+                    //    teamsStats,
+                    //    x => x.AggressionY + x.AggressionR * 2,
+                    //    x => (x.AggressionY + x.AggressionR * 2).ToString(),
+                    //    teamLookup);
+                    model.Aggression = teamsStats.OrderByDescending(o => (o.AggressionY + o.AggressionR * 2))
+                              .Take(5)
+                              .Select(x =>
+                              {
+                                  var team = teamLookup[x.TeamId];
+                                  return new StatInfo
+                                  {
+                                      Name = team.Name,
+                                      Info = x.AggressionR.ToString(),
+                                      Info2 = x.AggressionY.ToString(),
+                                      SeName = team.SeName
+                                  };
+                              }).ToList();
 
                     _logger.LogInformation("stat groups {Elapsed}", sw.ElapsedMilliseconds);
                     sw.Restart();
@@ -135,6 +153,13 @@ namespace eSport.MatchCentre.API.Services
                 PassAccuracy = f.Home.PassAccuracy,
                 Rating = f.Home.Rating,
                 Shots = f.Home.Shots,
+                AggressionR = f.Home.AggressionR,
+                AggressionY = f.Home.AggressionY,
+                AerielWonPS =
+        (f.Home.AerielWon + f.Away.AerielWon) == 0
+            ? 0
+            : (float)f.Home.AerielWon * 100 /
+              (f.Home.AerielWon + f.Away.AerielWon)
                 //SeName = f.Home.SeName
             });
 
@@ -145,7 +170,13 @@ namespace eSport.MatchCentre.API.Services
                 PassAccuracy = f.Away.PassAccuracy,
                 Rating = f.Away.Rating,
                 Shots = f.Away.Shots,
-
+                AggressionR = f.Away.AggressionR,
+                AggressionY = f.Away.AggressionY,
+                AerielWonPS =
+        (f.Home.AerielWon + f.Away.AerielWon) == 0
+            ? 0
+            : (float)f.Away.AerielWon * 100 /
+              (f.Home.AerielWon + f.Away.AerielWon)
             });
             var stats = await home
     .Concat(away)
@@ -156,7 +187,10 @@ namespace eSport.MatchCentre.API.Services
         TeamPossession = g.Average(x => x.Possession),
         PassAcc = g.Average(x => x.PassAccuracy),
         Ratings = (float)g.Average(x => x.Rating),
-        ShotsPerGame = (float)g.Average(x => x.Shots)
+        ShotsPerGame = (float)g.Average(x => x.Shots),
+        AerialWonPS = (float)g.Average(x => x.AerielWonPS), // Placeholder for AerialWonPS
+        AggressionR = (float)g.Sum(x => x.AggressionR),
+        AggressionY = (float)g.Sum(x => x.AggressionY)
     })
     .ToListAsync();
 
@@ -177,7 +211,7 @@ namespace eSport.MatchCentre.API.Services
                 return JsonSerializer.Deserialize<GetTournamentStagesResponse>((string)cached)!;
             }
 
-            var response = await GetSeasonStageGrpcClient().GetTournamentStagesAsync(new GetTournamentStagesRequest { SeasonStageId = seasonStageId });
+            var response = await _seasonStageGrpcClient.GetTournamentStagesAsync(new GetTournamentStagesRequest { SeasonStageId = seasonStageId });
 
             await _cached.SetAsync(
                 key,
@@ -198,7 +232,7 @@ namespace eSport.MatchCentre.API.Services
                 return JsonSerializer.Deserialize<List<GetTeamsMapping>>((string)cached)!;
             }
 
-            var response = await GetTeamPlayerGrpcClient().GetTeamsAsync(
+            var response = await _teamPlayerGrpcClient.GetTeamsAsync(
                 new GetTeamsRequest
                 {
                     Categoryid = categoryId,
@@ -235,48 +269,6 @@ namespace eSport.MatchCentre.API.Services
         }
 
 
-        #region gprc client initialization
-        private SeasonStageGrpc.SeasonStageGrpcClient GetSeasonStageGrpcClient()
-        {
-            if (_seasonStageGrpcClient is not null)
-            {
-                return _seasonStageGrpcClient;
-            }
-
-            _channel = GrpcChannel.ForAddress("https://localhost:7220");
-
-            _seasonStageGrpcClient = new SeasonStageGrpc.SeasonStageGrpcClient(_channel);
-
-            return _seasonStageGrpcClient;
-        }
-        private TeamPlayerGrpc.TeamPlayerGrpcClient GetTeamPlayerGrpcClient()
-        {
-            if (_teamPlayerGrpcClient is not null)
-            {
-                return _teamPlayerGrpcClient;
-            }
-
-            _channel = GrpcChannel.ForAddress("https://localhost:7167");
-
-            _teamPlayerGrpcClient = new TeamPlayerGrpc.TeamPlayerGrpcClient(_channel);
-
-            return _teamPlayerGrpcClient;
-        }
-        #endregion
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _channel?.Dispose();
-            }
-        }
-
-
-
-        ~TeamService()
-        {
-            Dispose(false);
-        }
     }
 
 }

@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Grpc.Net.Client" Version="2.80.0" />
+		<PackageReference Include="Grpc.Net.Client" Version="2.83.0" />
 		<PackageReference Include="xunit.v3" Version="3.2.2" />
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

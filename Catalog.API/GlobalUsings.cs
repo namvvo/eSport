@@ -7,3 +7,4 @@ global using eSport.Catalog.API.Infrastructure;
 global using eSport.Catalog.API.Infrastructure.EntityConfigurations;
 global using eSport.ServiceDefaults.Infrastructure;
 global using eSport.Catalog.API.GraphQL.Dto;
+global using eSport.TeamPlayer.API.Grpc;

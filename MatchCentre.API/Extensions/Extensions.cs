@@ -47,11 +47,20 @@ public static class Extensions
                .AddSorting();
 
         //// REVIEW: This is done for development ease but shouldn't be here in production
-        //builder.Services.AddMigration<FixtureContext>();        
+        //builder.Services.AddMigration<FixtureContext>();  // REVIEW: This is done for development ease but shouldn't be here in production, and when run dotnet run --project . -- schema export
         builder.Services.AddSingleton<RedisCache>();
 
         builder.Services.AddScoped<IFixtureService, FixtureService>();
         builder.Services.AddScoped<ITeamService, TeamService>();
+        builder.Services.AddScoped<ILeagueStatService, LeagueStatService>();
+        builder.Services.AddGrpcClient<TeamPlayerGrpc.TeamPlayerGrpcClient>(o =>
+        {
+            o.Address = new Uri("https://localhost:7167"); // hoặc tên service trong .NET Aspire / Service Discovery
+        });
+        builder.Services.AddGrpcClient<SeasonStageGrpc.SeasonStageGrpcClient>(o =>
+        {
+            o.Address = new Uri("https://localhost:7220"); // hoặc tên service trong .NET Aspire / Service Discovery
+        });
         //// Add the integration services that consume the DbContext
         //builder.Services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService<CatalogContext>>();
 
