@@ -5,7 +5,7 @@ public class SeasonStageService : ISeasonStageService
     private readonly CatalogContext _db;
     private readonly RedisCache _cached;
     private readonly TeamPlayerGrpc.TeamPlayerGrpcClient _teamPlayerGrpcClient;
-    public SeasonStageService(CatalogContext db, 
+    public SeasonStageService(CatalogContext db,
         RedisCache cache,
         TeamPlayerGrpc.TeamPlayerGrpcClient teamPlayerGrpcClient)
     {
@@ -21,7 +21,7 @@ public class SeasonStageService : ISeasonStageService
     /// <exception cref="ArgumentException"></exception>
     public async Task<SeasonStage?> GetCurrentSeasonStageByCategoryAsync(int categoryId, CancellationToken ct)
     {
-        var category = _db.Categories.Find(categoryId);
+        //var category = _db.Categories.Find(categoryId);
         //if (category == null)
         //{
         //    throw new ArgumentException("Category is not a tournament or category is not available");
@@ -32,16 +32,27 @@ public class SeasonStageService : ISeasonStageService
                      join ss in _db.SeasonStages on s.Id equals ss.StageId
                      join se in _db.Seasons on ss.SeasonId equals se.Id
                      where csm.CategoryId == categoryId && !ss.IsComplete
-                     orderby se.Year2 ascending, s.DisplayOrder ascending
+                     orderby se.Year2 descending, s.DisplayOrder ascending
                      select ss;
 
         return await result.FirstOrDefaultAsync(ct);
     }
+    /// <summary>
+    /// 1. must have at least 1 fixture round
+    //2.  otherwise, stay with the orderby desc seasonstageid, desc completeround
+    /// </summary>
+    /// <param name="categoryId"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public async Task<SeasonStage?> GetCurrentSeasonStageByCategoryInTournamentAsync(int categoryId, CancellationToken ct)
+   => await _db.CategorySeasonStages
+           .AsNoTracking()
+           .Where(w => w.CategoryId == categoryId)
+           .OrderByDescending(o => o.SeasonStageId).ThenByDescending(o => o.CompleteRound)
+           .Select(s => s.SeasonStage)
+           .FirstOrDefaultAsync(ct);
 
-    public Task<SeasonStage?> GetCurrentSeasonStageByCategoryInTournamentAsync(int categoryId, CancellationToken ct)
-    {
-        throw new NotImplementedException();
-    }
 
     /// <summary>
     /// StageId =  1 for domestic league, StageId > 2 for tournament
@@ -49,9 +60,11 @@ public class SeasonStageService : ISeasonStageService
     /// <param name="categoryId"></param>
     /// <returns></returns>
     public async Task<SeasonStage?> GetLatestSeasonStageForDomesticByCategoryAsync(int categoryId, CancellationToken ct)
-    => await _db.SeasonStages.Where(o => o.StageId == 1)
-                                               .OrderByDescending(o => o.SeasonId)
-                                               .FirstOrDefaultAsync();
+    => throw new NotImplementedException();
+
+    //await _db.SeasonStages.Where(o => o.StageId == 1)
+    //                                           .OrderByDescending(o => o.SeasonId)
+    //                                           .FirstOrDefaultAsync();
 
     public async Task<SeasonStage?> GetSeasonStageMappingByIdAsync(int seasonStageId, bool loadSeason = false, CancellationToken ct = default)
     {
@@ -75,7 +88,7 @@ public class SeasonStageService : ISeasonStageService
         return _db.Stages.Find(id);
     }
 
-    
+
     public async Task<IList<SeasonStage>> GetSeasonStagesAsync(int seasonId = 0, IList<int> stageIds = null, CancellationToken ct = default)
     {
         var query = _db.SeasonStages.Where(s => s.Status); // update manually on db
@@ -124,6 +137,23 @@ public class SeasonStageService : ISeasonStageService
         return result.OrderBy(o => o.DisplayOrder);
 
     }
+    /// <summary>
+    /// avoid using Include just to get simple fields
+    /// </summary>
+    /// <param name="categoryId"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    public async Task<List<SeasonStageDto>> GetCategorySeasonStagesAsync(int categoryId, CancellationToken ct = default)
+    => await _db.CategorySeasonStages
+            .AsNoTracking()
+            .Where(w => w.CategoryId == categoryId)
+            .Select(s => new SeasonStageDto
+            {
+                SeasonId = s.SeasonStage.SeasonId,
+                Year = s.SeasonStage.Season.Year,
+                Year2 = s.SeasonStage.Season.Year2,
+                SeasonStageId = s.SeasonStageId
+            }).ToListAsync(ct);
 
     /// <summary>
     /// list all season stage mapping for a category, if seasonId = 0, it will return all seasons, if stageId = 0, it will return all stages
@@ -134,14 +164,14 @@ public class SeasonStageService : ISeasonStageService
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public async Task<List<SeasonStageDto>> GetCategorySeasonStagesAsync(int categoryId,
-                                                                  int seasonId=0,
-                                                                  int stageId=0,
-                                                                  CancellationToken cancellationToken = default)
+                                                                  int seasonId = 0,
+                                                                  int stageId = 0,
+                                                                  CancellationToken ct = default)
     {
         // 1. Gọi gRPC lấy danh sách SeasonStageId từ TeamPlayer Subgraph
         var grpcResponse = await _teamPlayerGrpcClient.GetSeasonStageIdsByCategoryAsync(
             new GetSeasonStageIdsByCategoryRequest { CategoryId = categoryId },
-            cancellationToken: cancellationToken);
+            cancellationToken: ct);
 
         var seasonStageIds = grpcResponse.SeasonStageIds;
 
@@ -162,7 +192,7 @@ public class SeasonStageService : ISeasonStageService
             .AsNoTracking()
             .Where(c => c.Id == categoryId)
             .Select(c => c.Name)
-            .FirstOrDefaultAsync(cancellationToken) ?? string.Empty;
+            .FirstOrDefaultAsync(ct) ?? string.Empty;
 
         // 4. Truy vấn tối ưu trên DB Catalog
         var query = await (
@@ -177,7 +207,7 @@ public class SeasonStageService : ISeasonStageService
             {
                 SeasonId = s.Id,
                 Year = s.Year,
-                Year2 =s.Year2.ToString(),
+                Year2 = s.Year2,
                 SeasonStageId = ssm.Id,
                 CategoryName = categoryName,
                 Stage = st.Name,
@@ -185,7 +215,7 @@ public class SeasonStageService : ISeasonStageService
             }
         )
         .Distinct()
-        .ToListAsync(cancellationToken);
+        .ToListAsync(ct);
 
         return query;
     }
@@ -223,10 +253,10 @@ public class SeasonStageService : ISeasonStageService
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id, nameof(id));
 
-        return await _db.Seasons.FindAsync(id)??
+        return await _db.Seasons.FindAsync(id) ??
             throw new System.Collections.Generic.KeyNotFoundException("Season not found");
     }
-   
+
 
     private async Task<IList<Stage>> GetStagesAsync(string league)
     {
@@ -249,5 +279,5 @@ public class SeasonStageService : ISeasonStageService
         return new List<Stage>();
     }
 
-    
+
 }

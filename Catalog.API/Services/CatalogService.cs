@@ -1,4 +1,5 @@
 ﻿
+
 using System.Text.Json;
 
 namespace eSport.Catalog.API.Services
@@ -8,7 +9,7 @@ namespace eSport.Catalog.API.Services
         private readonly CatalogContext _db;
         private readonly RedisCache _cached;
         private readonly ISeasonStageService _seasonStageService;
-       
+
         public CatalogService(CatalogContext db,
             RedisCache cache,
             ISeasonStageService seasonStageService
@@ -17,9 +18,46 @@ namespace eSport.Catalog.API.Services
             _db = db;
             _cached = cache;
             _seasonStageService = seasonStageService;
-           
+
+        }
+        public async Task<LeagueCalendarDto> GetCurrentRoundLeagueCalendar(int seasonStageId, int categoryId, CancellationToken ct = default)
+        {
+            var data = await _db.CategorySeasonStages
+        .AsNoTracking()
+        .Where(c =>
+            c.CategoryId == categoryId &&
+            c.SeasonStageId == seasonStageId)
+        .Select(c => new
+        {
+            c.CategoryId,
+            CurrentRound = new RoundOfFixture
+            {
+                Round = c.CurrentRound.Round,
+                Start = c.CurrentRound.Start.ToLocalTime(),
+                End = c.CurrentRound.End.ToLocalTime()
+            },
+            c.LeagueRound
+        })
+        .FirstOrDefaultAsync(ct);
+            if (data is null)
+                return null;
+
+            return new LeagueCalendarDto
+            {
+                CategoryId = data.CategoryId,
+                CurrentRound = data.CurrentRound,
+                Rounds = EnumerateLeagueRound(data.LeagueRound).ToList(),
+                LeagueEndRound = data.LeagueRound
+            };
+
         }
 
+        private IEnumerable<int> EnumerateLeagueRound(int leagueRound)
+        {
+            // enumerate all rounds
+            for (int i = 1; i <= leagueRound; i++)
+                yield return i;
+        }
         public async Task<Category> GetCategoryBySlugAsync(string slug)
         {
             if (string.IsNullOrEmpty(slug))
@@ -29,11 +67,10 @@ namespace eSport.Catalog.API.Services
                    ?? throw new System.Collections.Generic.KeyNotFoundException($"Category with slug {slug} not found.");
         }
 
-        public async Task<Category> GetCategoryByIdAsync(int id)
+        public async Task<Category> GetCategoryByIdAsync(int id, CancellationToken ct)
         {
-            //if(id < 0) throw new ArgumentOutOfRangeException(nameof(id));
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id, nameof(id));
-            return await _db.Categories.FindAsync(id)
+            return await _db.Categories.FindAsync(id, ct)
                    ?? throw new System.Collections.Generic.KeyNotFoundException($"Category {id} not found.");
         }
         /// <summary>
@@ -96,20 +133,6 @@ namespace eSport.Catalog.API.Services
 
         }
 
-       
-        //private SeasonStageGrpc.SeasonStageGrpcClient GetSeasonStageGrpcClient()
-        //{
-        //    if (_seasonStageGrpcClient is not null)
-        //    {
-        //        return _seasonStageGrpcClient;
-        //    }
-
-        //    _channel = GrpcChannel.ForAddress("https://localhost:7220");
-
-        //    _seasonStageGrpcClient = new SeasonStageGrpc.SeasonStageGrpcClient(_channel);
-
-        //    return _seasonStageGrpcClient;
-        //}
 
 
     }

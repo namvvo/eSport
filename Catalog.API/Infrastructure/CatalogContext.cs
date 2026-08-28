@@ -16,7 +16,7 @@ public class CatalogContext : DbContext
     public DbSet<Category> Categories { get; set; } = null!;
     public  DbSet<Stage> Stages { get; set; } = null!;
     public  DbSet<CategoryStage> CategoryStages { get; set; } = null!;
-
+    public DbSet<CategorySeasonStage> CategorySeasonStages { get; set; } = null!;
     public DbSet<Season> Seasons { get; set; } = null!;
     public DbSet<SeasonStage> SeasonStages { get; set; } = null!;
 
@@ -31,7 +31,7 @@ public class CatalogContext : DbContext
         builder.ApplyConfiguration(new SeasonEntityTypeConfiguration());
         builder.ApplyConfiguration(new SeasonStageEntityTypeConfiguration());
 
-
+        builder.ApplyConfiguration(new CategorySeasonStageEntityTypeConfiguration());
         // Add the outbox table to this context
         //builder.UseIntegrationEventLogs();
     }

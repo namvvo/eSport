@@ -9,21 +9,24 @@ public static partial class SeasonStageQueries
     [UseFirstOrDefault]
     [UseProjection]   // Step 2: Project required fields
 
-    public static IQueryable<Stage?> GetStageById(CatalogContext db,
-                                          int id)
+    public static IQueryable<Stage?> GetStageById(CatalogContext db, int id)
     => db.Stages.AsNoTracking().Where(s => s.Id == id);
 
-    //public static async Task<SeasonStage?> GetCurrentSeasonStageByCategory(
-    //    [Service] ICatalogService service,
-    //    int categoryId,
-    //    CancellationToken ct)
-    //{
-    //    return await service.GetCurrentSeasonStageByCategoryAsync(categoryId, ct);
-    //}
+
+    /// <summary>
+    /// currentSeasonStageId => if 0, get the current season stage for the category, else get the season stage by id
+    /// </summary>
+    /// <param name="_categoryService"></param>
+    /// <param name="_seasonStageService"></param>
+    /// <param name="slug"></param>
+    /// <param name="currentSeasonStageId"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     public static async Task<LatestSeasonByCategoryDto> LatestSeasonsByCategory([Service] ICatalogService _categoryService,
                                                                             [Service] ISeasonStageService _seasonStageService,
                                                                             string slug,
-                                                                            int seasonStageId = 0,
+                                                                            int currentSeasonStageId = 0,
                                                                             CancellationToken ct = default)
     {
 
@@ -44,9 +47,9 @@ public static partial class SeasonStageQueries
         try
         {
             SeasonStage? seasonStage = new();
-            if (seasonStageId > 0)
+            if (currentSeasonStageId > 0)
             {
-                seasonStage = await _seasonStageService.GetSeasonStageMappingByIdAsync(seasonStageId, false, ct);
+                seasonStage = await _seasonStageService.GetSeasonStageMappingByIdAsync(currentSeasonStageId, false, ct);
                 if (seasonStage != null)
                 {
                     seasonId = seasonStage.SeasonId;
@@ -55,12 +58,12 @@ public static partial class SeasonStageQueries
                 else throw new Exception("SeasonStage not found");
             }
 
-            var allSeasonStagesByCategory = await _seasonStageService.GetCategorySeasonStagesAsync(categoryId);
-            //if (!latestSeasonStages.Any()) return new LatestSeasonByCategoryModel();
-            var orderedSeasonStages = allSeasonStagesByCategory.OrderByDescending(o => o.Year2); // most latest seasons
-            var seasonStageModels = orderedSeasonStages.GroupBy(g => g.SeasonStageId);
+            var allSeasonStagesByCategory = await _seasonStageService.GetCategorySeasonStagesAsync(categoryId, ct);
+            ////if (!latestSeasonStages.Any()) return new LatestSeasonByCategoryModel();
+            //var orderedSeasonStages = allSeasonStagesByCategory.OrderByDescending(o => o.Year2); // most latest seasons
+            //var seasonStageModels = orderedSeasonStages.GroupBy(g => g.SeasonStageId);
 
-            var currentSeasonStage = seasonStageId > 0 ? seasonStage :
+            var currentSeasonStage = currentSeasonStageId > 0 ? seasonStage :
                                      await _seasonStageService.GetCurrentSeasonStageByCategoryInTournamentAsync(categoryId, ct);  // cover both tournament and domestic
 
             if (currentSeasonStage == null) return new();
@@ -74,8 +77,6 @@ public static partial class SeasonStageQueries
                 }
 
             };
-
-
 
             #region categories
 
@@ -187,7 +188,7 @@ public static partial class SeasonStageQueries
                 //}
             }
             #endregion
-
+          
             return model;
         }
         catch (Exception e)

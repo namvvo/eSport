@@ -66,4 +66,5 @@ public partial class Category : Entity<int>
 
     public ICollection<Stage> Stages { get; set; } = []; // skip navigation
     public ICollection<CategoryStage> CategoryStages { get; set; } = [];
+    public ICollection<CategorySeasonStage> CategorySeasonStages { get; set; } = [];
 }

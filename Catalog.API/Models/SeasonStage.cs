@@ -17,5 +17,5 @@ public class SeasonStage : Entity<int>
     public Season Season { get; set; } = null!;
 
     public Stage Stage { get; set; } = null!;
-
+    public ICollection<CategorySeasonStage> CategorySeasonStages { get; set; } = [];
 }

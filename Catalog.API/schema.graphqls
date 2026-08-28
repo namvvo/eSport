@@ -11,8 +11,11 @@ type Query {
   menuCategories: [CategoryMenuDto!]!
     @cacheControl(maxAge: 0)
     @cost(weight: "10")
+  currentRoundLeagueCalendar(seasonStageId: Int!, categoryId: Int!): LeagueCalendarDto!
+    @cacheControl(maxAge: 0)
+    @cost(weight: "10")
   stageById(id: Int!): Stage @cacheControl(maxAge: 0) @cost(weight: "10")
-  latestSeasonsByCategory(slug: String!, seasonStageId: Int! = 0): LatestSeasonByCategoryDto!
+  latestSeasonsByCategory(slug: String!, currentSeasonStageId: Int! = 0): LatestSeasonByCategoryDto!
     @cacheControl(maxAge: 0)
     @cost(weight: "10")
 }
@@ -54,6 +57,7 @@ type Category @key(fields: "id") {
   isData: Boolean!
   stages: [Stage!]!
   categoryStages: [CategoryStage!]!
+  categorySeasonStages: [CategorySeasonStage!]!
   id: Int!
 }
 
@@ -81,6 +85,20 @@ type CategoryModel {
   country: CountryModel
 }
 
+type CategorySeasonStage {
+  seasonStageId: Int!
+  categoryId: Int!
+  completeRound: Int!
+  leagueRound: Int!
+  fromMonth: Int!
+  toMonth: Int!
+  toDateUseYearPart: Int!
+  fixtureCount: Int!
+  currentRound: FixtureRound!
+  seasonStage: SeasonStage!
+  category: Category!
+}
+
 type CategoryStage {
   stageId: Int!
   categoryId: Int!
@@ -100,12 +118,31 @@ type CountryModel {
   countryCSS: String!
 }
 
+type FixtureRound {
+  round: Int!
+  start: DateTime!
+  end: DateTime!
+}
+
 type LatestSeasonByCategoryDto {
   currentSeasonStage: SeasonStageDto!
   categories: [CategoryModel!]!
   stages: [StageDto!]!
   seasons: [SeasonDto!]!
   teams: [TeamSimpleDto!]!
+}
+
+type LeagueCalendarDto {
+  categoryId: Int!
+  currentRound: RoundOfFixture!
+  rounds: [Int!]!
+  leagueEndRound: Int!
+}
+
+type RoundOfFixture {
+  round: Int!
+  start: DateTime!
+  end: DateTime!
 }
 
 type Season {
@@ -122,7 +159,7 @@ type SeasonDto {
   id: Int!
   name: String
   year: String!
-  year2: String!
+  year2: Int!
   displayOrder: Int!
   isActive: Boolean!
 }
@@ -134,13 +171,14 @@ type SeasonStage {
   status: Boolean!
   season: Season!
   stage: Stage!
+  categorySeasonStages: [CategorySeasonStage!]!
   id: Int!
 }
 
 type SeasonStageDto {
   seasonStageId: Int!
   year: String!
-  year2: String!
+  year2: Int!
   stageId: Int!
   seasonId: Int!
   stage: String!
@@ -176,7 +214,6 @@ type Stage {
 type StageDto {
   id: Int!
   name: String!
-  round: Int!
   isActive: Boolean!
   display: Boolean!
 }

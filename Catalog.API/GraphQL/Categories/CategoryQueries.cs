@@ -41,5 +41,11 @@ public static partial class CategoryQueries
     {
         return await service.GetMenuCategoriesAsync(ct);
     }
-
+    public static async Task<LeagueCalendarDto> GetCurrentRoundLeagueCalendar(int seasonStageId,
+                                                                              int categoryId,
+                                                                              [Service] ICatalogService service,
+                                                                              CancellationToken ct)
+    { 
+        return await service.GetCurrentRoundLeagueCalendar(seasonStageId,categoryId, ct);
+    }
 }

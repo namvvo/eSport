@@ -9,6 +9,7 @@ builder.AddApplicationServices();
 builder.Services.AddGrpc();
 var app = builder.Build();
 app.MapGrpcService<SeasonStageGrpcEndpoint>();
+app.MapGrpcService<CategoryGrpcEndpoint>();
 app.MapGraphQL();
 #region updatesename
 //using (var scope = app.Services.CreateScope())

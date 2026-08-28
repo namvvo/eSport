@@ -8,7 +8,7 @@ class SeasonStageEntityTypeConfiguration : IEntityTypeConfiguration<SeasonStage>
     {
         builder.ToTable("Season_Stage_Mapping");
 
-        builder.HasKey(cs => new { cs.SeasonId, cs.StageId });
+        builder.HasKey(cs => cs.Id);
         builder.HasOne(cs => cs.Stage)
             .WithMany(s => s.SeasonStages)
             .HasForeignKey(cs => cs.StageId);
@@ -16,5 +16,12 @@ class SeasonStageEntityTypeConfiguration : IEntityTypeConfiguration<SeasonStage>
         builder.HasOne(cs => cs.Season)
                 .WithMany(c => c.SeasonStages)
                 .HasForeignKey(cs => cs.SeasonId);
+
+         builder.HasIndex(x => new
+         {
+             x.SeasonId,
+             x.StageId
+         })
+        .IsUnique();
     }
 }

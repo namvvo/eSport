@@ -34,6 +34,7 @@
 		<Protobuf Include="..\Catalog.Contracts\Protos\season_stage.proto" Link="Protos\season_stage.proto" GrpcServices="Both" />
 		<ProjectReference Include="..\eSport.ServiceDefaults\eSport.ServiceDefaults.csproj" />
 		<Protobuf Include="..\TeamPlayer.Contracts\Protos\team.proto" Link="Protos\team.proto" GrpcServices="Client" />
+		<Protobuf Include="..\Catalog.Contracts\Protos\category.proto" Link="Protos\category.proto" GrpcServices="Both" />
 	</ItemGroup>
 
 	<ItemGroup>
