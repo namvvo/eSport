@@ -1,0 +1,11 @@
+﻿query currentRoundLeagueCalendar($categoryId: Int!, $seasonStageId: Int!) {
+  currentRoundLeagueCalendar(categoryId: $categoryId, seasonStageId: $seasonStageId) {
+    categoryId
+    rounds
+    currentRound {
+      round
+      start
+      end
+    }
+  }
+}

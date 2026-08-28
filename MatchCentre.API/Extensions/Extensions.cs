@@ -37,17 +37,14 @@ public static class Extensions
                .AddGraphQLServer("MatchCentre")
                .AddQueryType(d => d.Name("Query"))
                .AddMatchCentreTypes()
-               //.UseAutomaticPersistedOperationPipeline()
-        //      .AddRedisOperationDocumentStorage(_ =>
-        //ConnectionMultiplexer.Connect(
-        //    builder.Configuration.GetConnectionString("redis")!).GetDatabase())
+             
                .AddCacheControl()
                .AddProjections()
                .AddFiltering()
                .AddSorting();
 
         //// REVIEW: This is done for development ease but shouldn't be here in production
-        //builder.Services.AddMigration<FixtureContext>();  // REVIEW: This is done for development ease but shouldn't be here in production, and when run dotnet run --project . -- schema export
+        builder.Services.AddMigration<FixtureContext>();  // REVIEW: This is done for development ease but shouldn't be here in production, and when run dotnet run --project . -- schema export
         builder.Services.AddSingleton<RedisCache>();
 
         builder.Services.AddScoped<IFixtureService, FixtureService>();

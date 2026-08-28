@@ -13,7 +13,7 @@ namespace eSport.TeamPlayer.API.Infrastructure.Migrations
 {
     [DbContext(typeof(TeamPlayerContext))]
     [Migration("20260629033605_newmigration")]
-    partial class newmigration
+    partial class NewMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

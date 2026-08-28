@@ -1,6 +1,5 @@
-﻿using eSport.MatchCentre.API.Dto.League;
+﻿namespace eSport.MatchCentre.API.Services;
 
-namespace eSport.MatchCentre.API.Services;
 public static class LeaguePlayerAggregateMapper
 {
     public static LeaguePlayerAggregateDto Map(
@@ -11,7 +10,7 @@ public static class LeaguePlayerAggregateMapper
             PlayerId = row.PlayerId,
             TeamOwnerId = row.TeamOwnerId,
             CategoryId = row.CategoryId,
-
+            TeamGoals = row.TeamGoals,
             Rating = row.Rating,
             Apps = row.Apps,
             MinPlayed = row.MinPlayed,
@@ -29,47 +28,48 @@ public static class LeaguePlayerAggregateMapper
                 Goals = row.Goals,
                 PenGoals = row.PenGoals,
                 Assists = row.Assists,
-                ShotsPerGame = row.ShotsPerGame,
-                ShotsOnTarget = row.ShotsOT,
-                Dribbles = row.Dribbles,
-                KeyPasses = row.KeyPasses,
-                Fouled = row.Fouled,
-                Offsides = row.Offsides,
-                TeamGoals = row.TeamGoals
+
+                ShotsPerGame = Math.Round(row.ShotsPerGame, 2),
+                ShotsOnTarget = Math.Round(row.ShotsOT, 2),
+                Dribbles = Math.Round(row.Dribbles, 2),
+                KeyPasses = Math.Round(row.KeyPasses, 2),
+                Fouled = Math.Round(row.Fouled, 2),
+                Offsides = Math.Round(row.Offsides, 2),
             },
 
             Passing = new PassingStats
             {
-                PSPercentage = row.PSPercentage,
+                PSPercentage = Math.Round(row.AccuratePassingPercentage, 2),
                 Passes = row.Passes,
-                AccCrosses = row.AccCrosses,
-                Crosses = row.Crosses,
-                LongBalls = row.LongBalls,
-                AvgP = row.AvgP,
-                ThroughBalls = row.ThroughBalls,
-                //PassAccuracy = row.
+                AccCrosses = Math.Round(row.AccCrosses, 2),
+                Crosses = Math.Round(row.Crosses, 2),
+                LongBalls = Math.Round(row.LongBalls, 2),
+                AvgP = Math.Round(row.AvgP, 2),
+                ThroughBalls = Math.Round(row.ThroughBalls, 2),
+                PassAccuracy = Math.Round(row.AccPasses,2)
             },
 
             Defending = new DefendingStats
             {
-                Tackles = row.Tackles,
-                Interceptions = row.Interceptions,
-                Clearances = row.Clearances,
-                Blocks = row.Blocks,
-                AerielWon = row.AerielsWon,
-                Dispossessed = row.Dispossessed,
-                Fouls = row.Fouls,
+                Tackles = Math.Round(row.Tackles, 2),
+                Interceptions = Math.Round(row.Interceptions, 2),
+                Clearances = Math.Round(row.Clearances, 2),
+                Blocks = Math.Round(row.Blocks, 2),
+                AerielWon = Math.Round(row.AerielsWon, 2),
+                Dispossessed = Math.Round(row.Dispossessed, 2),
+                Fouls = Math.Round(row.Fouls, 2),
                 OwnGoals = row.OwnGoals,
-
             },
 
             Goalkeeping = new GoalkeepingStats
             {
-                Saves = row.Saves,
+                Saves = Math.Round(row.Saves, 2),
                 //GoalsConceded = row.GoalsConceded,
                 //CleanSheets = row.CleanSheets,
                 //PenSaves = row.PenS
             }
         };
     }
+
+    
 }

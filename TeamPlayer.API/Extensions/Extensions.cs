@@ -1,4 +1,5 @@
-﻿using eSport.ServiceDefaults.APIExtensions;
+﻿using eSport.Catalog.API.Grpc;
+using eSport.ServiceDefaults.APIExtensions;
 
 using StackExchange.Redis;
 namespace eSport.TeamPlayer.API.Extensions;
@@ -41,7 +42,10 @@ public static class Extensions
                .AddFiltering()
                .AddSorting();
 
-
+        builder.Services.AddGrpcClient<CategoryGrpc.CategoryGrpcClient>(o =>
+        {
+            o.Address = new Uri("https://localhost:7220"); // hoặc tên service trong .NET Aspire / Service Discovery
+        });
         //    graphQLBuilder.AddRedisOperationDocumentStorage(sp =>
         //sp.GetRequiredService<StackExchange.Redis.IConnectionMultiplexer>().GetDatabase()); ;
         // REVIEW: This is done for development ease but shouldn't be here in production

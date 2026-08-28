@@ -1,0 +1,32 @@
+query teamStandingsByCategory($categoryId: Int!, $seasonStageId: Int!){
+  teamStandingsByCategory(categoryId: $categoryId, seasonStageId: $seasonStageId) {
+    teamStandings {
+      p
+      w
+      d
+      l
+      ga
+      gf
+      gd
+      shotsPerGame
+      pts
+      forms
+      rank
+      lastRank
+      team
+      teamId
+      teamSeName
+    }
+    rankRule {
+      group1
+      group2
+      group3
+      group4
+      group5
+      group6
+    }
+    isTournament
+    isComplete
+  
+  }
+}

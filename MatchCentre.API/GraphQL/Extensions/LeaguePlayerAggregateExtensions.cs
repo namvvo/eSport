@@ -1,5 +1,4 @@
-﻿using eSport.MatchCentre.API.Dto.League;
-using eSport.MatchCentre.API.GraphQL.Queries.Fixtures;
+﻿using eSport.MatchCentre.API.GraphQL.Queries.Fixtures;
 
 namespace eSport.MatchCentre.API.GraphQL.Extensions;
 /// <summary>

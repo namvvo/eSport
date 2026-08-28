@@ -1,21 +1,25 @@
 ﻿@if (currentSeason != null &&
 currentSeason.SelectedStageId > 0)
 {
-   
+
     <UseTeamsStatsByLeague Context="result"
                            CategoryId="currentSeason.ActiveCategory.Id"
                            SeasonStageId="currentSeason.ActiveSeasonStage.SeasonStageId"
-                           Strategy="ExecutionStrategy.CacheFirst">
+                           Strategy="ExecutionStrategy.CacheAndNetwork">
         <ChildContent>
             @{
-                this.topTeamStats = result.TeamsStatsByLeague.Adapt<TopTeamStatModel>();
+                // this.topTeamStats = result.TeamsStatsByLeague.Adapt<TopTeamStatDto>();
+                var topTeamStats = result.TeamsStatsByLeague;
                 <h3 class="title-right">Thống kê đội bóng</h3>
                 <div class="grid grid-cols-12">
                     <StatsTemplate RowHeaderTitle="Giữ bóng"
                                    Css="stat-bar-wrapper"
                                    Width="w80"
                                    DivCss="col-span-4"
-                                   Items="topTeamStats.Possession">
+                                   Items="topTeamStats.Possession"
+                                   GetName="x=>x.Name"
+                                   GetSeName="x => x.SeName"
+                                   GetInfo="x => x.Info">
                     </StatsTemplate>
                     <div class="col-span-4 ml-1 mr-1">
                         <table class="striped">
@@ -31,7 +35,7 @@ currentSeason.SelectedStageId > 0)
                                         <td class="list-key">
                                             <NavLink class="team-link" href="@($"clb/du-lieu/{item.SeName}")" title="@item.Name">@item.Name</NavLink>
                                         </td>
-                                        
+
                                         <td>
                                             <span class="stat-value number red-card-box">@item.Info2</span>
                                         </td>
@@ -47,39 +51,51 @@ currentSeason.SelectedStageId > 0)
                                    Css="stat-bar-wrapper"
                                    Width="w70"
                                    DivCss="col-span-4"
-                                   Items="topTeamStats.AerialDuels">
+                                   Items="topTeamStats.AerialDuels"
+                                   GetName="x=>x.Name"
+                                   GetSeName="x => x.SeName"
+                                   GetInfo="x => x.Info">
                     </StatsTemplate>
                     <StatsTemplate RowHeaderTitle="Shoot mỗi trận"
                                    Css="stat-bar-wrapper value"
                                    Width="w70"
                                    DivCss="col-span-4"
                                    IsPercentageValue="false"
-                                   Items="topTeamStats.ShotsPerGame">
+                                   Items="topTeamStats.ShotsPerGame"
+                                   GetName="x=>x.Name"
+                                   GetSeName="x => x.SeName"
+                                   GetInfo="x => x.Info">
                     </StatsTemplate>
 
                     <StatsTemplate RowHeaderTitle="Chuyền chính xác"
                                    Css="stat-bar-wrapper"
                                    Width="w80"
                                    DivCss="col-span-4 ml-1 mr-1"
-                                   Items="topTeamStats.PassAccuracy">
+                                   Items="topTeamStats.PassAccuracy"
+                                   GetName="x=>x.Name"
+                                   GetSeName="x => x.SeName"
+                                   GetInfo="x => x.Info">
                     </StatsTemplate>
                     <StatsTemplate RowHeaderTitle="Điểm đánh giá"
                                    Css="stat-value number rating"
                                    Width=""
                                    DivCss="col-span-4"
                                    IsPercentageValue=false
-                                   Items="topTeamStats.Ratings">
+                                   Items="topTeamStats.Ratings"
+                                   GetName="x=>x.Name"
+                                   GetSeName="x => x.SeName"
+                                   GetInfo="x => x.Info">
                     </StatsTemplate>
                 </div>
             }
         </ChildContent>
-
-    </UseTeamsStatsByLeague> 
+        <LoadingContent>loading thong ke</LoadingContent>
+    </UseTeamsStatsByLeague>
 }
 @code {
     [Parameter]
     public CurrentSeasonModel? currentSeason { get; set; }
-    protected TopTeamStatModel? topTeamStats { get; set; }
+    // protected TopTeamStatDto? topTeamStats { get; set; }
     protected string GetStatBar(string itemInfo, string wholeInfo) =>
          ("width: " + (Convert.ToDouble(itemInfo.Replace(",", ".")) / Convert.ToDouble(wholeInfo.Replace(",", "."))) * 100 + "%;");
 

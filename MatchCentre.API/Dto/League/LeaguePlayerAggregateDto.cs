@@ -17,7 +17,7 @@ public sealed record LeaguePlayerAggregateDto
     public int MinPlayed { get; set; }
     public double MarketValue { get; set; }
     public double CustomScore { get; set; }
-
+    public int TeamGoals { get; set; }
     public GeneralPlayerStats General { get; init; } = default!;
 
     public AttackingStats Attacking { get; init; } = default!;

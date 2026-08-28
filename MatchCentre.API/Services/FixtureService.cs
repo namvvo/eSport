@@ -6,7 +6,7 @@ public class FixtureService : IFixtureService
 {
     private readonly FixtureContext _db;
 
-    
+
     public FixtureService(FixtureContext db)
     {
         _db = db;
@@ -14,6 +14,23 @@ public class FixtureService : IFixtureService
     public Task<FixtureDto> GetFixtureAsync(int id)
     {
         throw new NotImplementedException();
+    }
+    public async Task<IQueryable<Fixture>> GetFixturesByLeague(int seasonStageId,
+                                                   int categoryId,
+                                                   DateTime startDate,
+                                                   DateTime endDate,
+                                                   bool withTeam = false)
+    {
+        var query= _db.Fixtures
+         .AsNoTracking()
+         .Where(f =>
+             f.SeasonStageId == seasonStageId &&
+             f.Time >= startDate &&
+             f.Time <= endDate &&
+             f.FixtureCategories.Any(fc =>
+                 fc.CategoryId == categoryId))
+         .OrderBy(f => f.Time);
+        return await Task.FromResult(query);
     }
     /// <summary>
     /// get fixtures based on multi seasonstageids, categories
@@ -99,7 +116,7 @@ public class FixtureService : IFixtureService
         {
             query = query.Where(f => f.Id != req.OmittedId.Value);
         }
-        var results =  query
+        var results = query
             .OrderByDescending(f => f.Time)
             .Select(f => new FixtureSearchResultDto
             {

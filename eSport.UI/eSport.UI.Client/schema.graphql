@@ -6,8 +6,15 @@ type Query {
   categories: [Category!]!
   categoryById(id: Int!): Category
   categoryStubById(id: Int!): Category
+  currentRoundLeagueCalendar(categoryId: Int!, seasonStageId: Int!): LeagueCalendarDto!
   fixture(id: Int!): [Fixture!]!
-  latestSeasonsByCategory(seasonStageId: Int! = 0, slug: String!): LatestSeasonByCategoryDto!
+  fixturesByLeague(
+    categoryId: Int!
+    endDate: DateTime!
+    seasonStageId: Int!
+    startDate: DateTime!
+  ): [Fixture!]!
+  latestSeasonsByCategory(currentSeasonStageId: Int! = 0, slug: String!): LatestSeasonByCategoryDto!
   leaguePlayerStats(filter: LeaguePlayerStatsFilterInput!): PagedResultOfLeaguePlayerAggregateDto!
   menuCategories: [CategoryMenuDto!]!
   playerById(id: Int!): Player
@@ -15,6 +22,8 @@ type Query {
   teamById(id: Int!): Team
   teams: [Team!]!
   teamsStatsByLeague(categoryId: Int!, seasonStageId: Int!): TopTeamStatDto!
+  teamStandingsByCategory(categoryId: Int!, seasonStageId: Int!): TeamStandingModel!
+  topLeaguePlayersStats(filter: LeaguePlayerStatsFilterInput!): TopPlayerStatsModel!
 }
 
 type AttackingStats {
@@ -27,10 +36,10 @@ type AttackingStats {
   penGoals: Int!
   shotsOnTarget: Float!
   shotsPerGame: Float!
-  teamGoals: Int!
 }
 
 type Category {
+  categorySeasonStages: [CategorySeasonStage!]!
   categoryStages: [CategoryStage!]!
   coefficient: Float
   countryCSS: String
@@ -95,6 +104,20 @@ type CategoryModel {
   seName: String!
 }
 
+type CategorySeasonStage {
+  category: Category!
+  categoryId: Int!
+  completeRound: Int!
+  currentRound: FixtureRound!
+  fixtureCount: Int!
+  fromMonth: Int!
+  leagueRound: Int!
+  seasonStage: SeasonStage!
+  seasonStageId: Int!
+  toDateUseYearPart: Int!
+  toMonth: Int!
+}
+
 type CategoryStage {
   category: Category!
   categoryId: Int!
@@ -132,6 +155,7 @@ type Fixture {
   autoUrl: String
   away: Stats!
   awayId: Int!
+  awayTeam: Team!
   createdDate: DateTime
   extraTime: String
   fixtureCategories: [FixtureCategory!]!
@@ -143,12 +167,15 @@ type Fixture {
   hasVideos: Boolean!
   home: Stats!
   homeId: Int!
+  homeTeam: Team!
   id: Int!
   incidents: String
   isAwarded: Boolean!
   isComplete: Boolean!
   isFriendly: Boolean
+  isLiveMatch: Boolean!
   isScraping: Boolean!
+  isTopMatch: Boolean!
   liveScore: String
   liveTV: String
   machine: String
@@ -160,11 +187,14 @@ type Fixture {
   round: Int!
   runGoalLive: Boolean
   runSquawkaLive: Boolean
+  score: String!
   seasonStageId: Int!
+  showStats: Boolean!
   sofascoreId: Int!
   stadium: String
   status: FixtureStatusEnum!
   time: DateTime!
+  time2: String!
   timeElapsed: String
   updatedComment: Boolean!
   updatedFixtureStats: Boolean
@@ -191,6 +221,12 @@ type FixtureComment {
   min: String!
   team: Int!
   text: String!
+}
+
+type FixtureRound {
+  end: DateTime!
+  round: Int!
+  start: DateTime!
 }
 
 type FixtureStat {
@@ -297,6 +333,13 @@ type LatestSeasonByCategoryDto {
   teams: [TeamSimpleDto!]!
 }
 
+type LeagueCalendarDto {
+  categoryId: Int!
+  currentRound: RoundOfFixture!
+  leagueEndRound: Int!
+  rounds: [Int!]!
+}
+
 type LeaguePlayerAggregateDto {
   apps: Int!
   attacking: AttackingStats!
@@ -316,6 +359,7 @@ type LeaguePlayerAggregateDto {
   playerName: String!
   rating: Float!
   team: Team!
+  teamGoals: Int!
   teamOwnerId: Int!
   teamPosition: String
 }
@@ -326,8 +370,6 @@ type PagedResultOfLeaguePlayerAggregateDto {
   items: [LeaguePlayerAggregateDto!]!
   pageIndex: Int!
   pageSize: Int!
-  totalPages: Int!
-  totalRecords: Int!
 }
 
 type PassingStats {
@@ -358,9 +400,9 @@ type Player {
   percentageGainInLast6Rounds: Decimal!
   pictureUrl: String
   preferredFoot: String
-  seName: String
   shortName: String
   skillSets: String
+  slug: String
   sofascorePlayerId: Int
   squawkaPlayerId: Int
   teamPlayers: [TeamPlayer!]!
@@ -371,6 +413,21 @@ type Player {
   url: String
   weight: String
   whoscoredPlayerId: Int
+}
+
+type RankRuleModel {
+  group1: Int
+  group2: Int
+  group3: Int
+  group4: Int
+  group5: Int
+  group6: Int
+}
+
+type RoundOfFixture {
+  end: DateTime!
+  round: Int!
+  start: DateTime!
 }
 
 type Season {
@@ -389,10 +446,11 @@ type SeasonDto {
   isActive: Boolean!
   name: String
   year: String!
-  year2: String!
+  year2: Int!
 }
 
 type SeasonStage {
+  categorySeasonStages: [CategorySeasonStage!]!
   id: Int!
   isComplete: Boolean!
   season: Season!
@@ -412,7 +470,7 @@ type SeasonStageDto {
   team: TeamSimpleDto!
   teamId: Int!
   year: String!
-  year2: String!
+  year2: Int!
 }
 
 type Stage {
@@ -443,15 +501,16 @@ type StageDto {
   id: Int!
   isActive: Boolean!
   name: String!
-  round: Int!
 }
 
 type StatInfo {
-  info: String
-  info2: String
-  infoWithDecimal: String
-  name: String
-  seName: String
+  info: String!
+  info2: String!
+  infoWithDecimal: String!
+  name: String!
+  player: Player!
+  playerId: Int!
+  seName: String!
 }
 
 type Stats {
@@ -529,6 +588,7 @@ type TeamCategory {
   rank: Int
   seasonStageId: Int!
   team: Team!
+  teamGoals: Int!
   teamId: Int!
   undefeated: Int!
   w: Int!
@@ -561,6 +621,51 @@ type TeamSimpleDto {
   teamId: Int!
 }
 
+type TeamStandingModel {
+  isComplete: Boolean!
+  isTournament: Boolean!
+  rankRule: RankRuleModel!
+  teamStandings: [TeamStatDto!]!
+}
+
+type TeamStatDto {
+  aerialWonPS: Float!
+  aggressionR: Float!
+  aggressionY: Float!
+  d: Int!
+  forms: String
+  ga: Int!
+  gd: Int!
+  gf: Int!
+  l: Int!
+  lastRank: Int!
+  p: Int!
+  passAcc: Float!
+  progress: String
+  pts: Int!
+  rank: Int!
+  ratings: Float!
+  shotsPerGame: Float!
+  team: String
+  teamId: ID!
+  teamPossession: Float!
+  teamSeName: String
+  teamShortName: String
+  w: Int!
+}
+
+type TopPlayerStatsModel {
+  aerialsWon: [StatInfo!]!
+  aggression: [StatInfo!]!
+  assist: [StatInfo!]!
+  dribble: [StatInfo!]!
+  goal: [StatInfo!]!
+  passAccuracy: [StatInfo!]!
+  ratings: [StatInfo!]!
+  shotsPerGame: [StatInfo!]!
+  topPerformance: [StatInfo!]!
+}
+
 type TopTeamStatDto {
   aerialDuels: [StatInfo!]!
   aggression: [StatInfo!]!
@@ -585,7 +690,7 @@ input LeaguePlayerStatsFilterInput {
   priceOrder: Int! = 0
   seasonStageIds: Int! = 0
   teamId: Int! = 0
-  teamPosition: String!
+  teamPosition: String = ""
   timeFrom: DateTime
   timeLimit: DateTime
   timeTo: DateTime
@@ -616,8 +721,12 @@ enum LeaguePlayerOrderBy {
   MARKET_VALUE
   APPS
   ASSISTS
+  SHOTS_PER_GAME
   MINUTES
   SAVES
+  AGGRESSION
+  DRIBBLES
+  PASS_ACCURACY
 }
 
 enum ScalarSerializationType {

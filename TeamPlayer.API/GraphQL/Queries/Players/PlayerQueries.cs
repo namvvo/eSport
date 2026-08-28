@@ -1,6 +1,4 @@
 ﻿using eSport.TeamPlayer.API.GraphQL.Queries.Players;
-using GreenDonut.Data;
-using Microsoft.Extensions.Options;
 
 namespace eSport.TeamPlayer.API.GraphQL.Players;
 

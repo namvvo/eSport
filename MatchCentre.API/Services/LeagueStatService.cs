@@ -1,8 +1,6 @@
 ﻿using eSport.MatchCentre.API.Dto.League;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using static eSport.TeamPlayer.API.Grpc.TeamPlayerGrpc;
-using static HotChocolate.Types.SpecScalarNames;
 
 namespace eSport.MatchCentre.API.Services;
 /// <summary>
@@ -61,7 +59,7 @@ public class LeagueStatService : ILeagueStatService
     }
     public async Task<PagedResult<LeaguePlayerAggregateDto>> GetLeaguePlayerStatsAsync(LeaguePlayerStatsFilter filter, CancellationToken ct)
     {
-        var sw = Stopwatch.StartNew();
+        //var sw = Stopwatch.StartNew();
 
 
         var query = BuildQuery();
@@ -78,20 +76,24 @@ public class LeagueStatService : ILeagueStatService
         }
 
         aggregate = ApplySorting(aggregate, filter);
-        //        _logger.LogInformation(
-        //"GetLeaguePlayerStatsAsync-before paging: {Elapsed} ms",
-        //sw.ElapsedMilliseconds);
         var page = await aggregate.ToPagedResultAsync(filter.PageIndex,
                                                       filter.PageSize,
                                                       ct);
+        var teamGoalsDict = await ComputeTeamGoals(page, filter);
+        foreach (var player in page.Items)
+        {
+            if (teamGoalsDict.TryGetValue(
+            (
+            player.TeamOwnerId,
+            player.CategoryId,
+            filter.SeasonStageIds
+            ),
+            out var teamGoals))
+            {
+                player.TeamGoals = teamGoals;
+            }
+        }
 
-
-        _logger.LogInformation(
-"GetLeaguePlayerStatsAsync-ToPagedResultAsync: {Elapsed} ms",
-sw.ElapsedMilliseconds);
-        //var results = await aggregate.ToPagedResultAsync(filter.PageIndex,
-        //                                          filter.PageSize);
-        //var sql =aggregate.ToQueryString();
         var results = new PagedResult<LeaguePlayerAggregateDto>
         {
             Items = page.Items
@@ -103,9 +105,7 @@ sw.ElapsedMilliseconds);
             PageIndex = page.PageIndex,
             PageSize = page.PageSize
         };
-        //        _logger.LogInformation(
-        //"GetLeaguePlayerStatsAsync-map: {Elapsed} ms",
-        //sw.ElapsedMilliseconds);
+
         return results;
     }
     private IQueryable<PlayerStatQueryDto> BuildQuery()
@@ -116,8 +116,7 @@ sw.ElapsedMilliseconds);
                 on stat.FixtureId equals fixture.Id
             join category in _db.FixtureCategories.AsNoTracking()
                 on fixture.Id equals category.FixtureId
-            //         join player in _db.pl
-            //on stat.PlayerId equals player.Id
+
             select new PlayerStatQueryDto
             {
                 Stat = stat,
@@ -197,6 +196,12 @@ sw.ElapsedMilliseconds);
         query = query.Where(s => s.Stat.Rating > 0);
         return query;
     }
+
+    /// <summary>
+    /// keeps data in raw, only round value after sorting
+    /// </summary>
+    /// <param name="query"></param>
+    /// <returns></returns>
     private IQueryable<LeaguePlayerAggregateRow> Aggregate(
                          IQueryable<PlayerStatQueryDto> query) => query
 
@@ -211,48 +216,43 @@ sw.ElapsedMilliseconds);
         PlayerId = g.Key.PlayerId,
         TeamOwnerId = g.Key.TeamOwnerId,
         CategoryId = g.Key.CategoryId,
-        Rating = Math.Round(g.Average(x => x.Stat.Rating), 2),
+        Rating = g.Average(x => x.Stat.Rating),
         Apps = g.Count(x => x.Stat.MinPlayed > 10), // EF 10 dịch Count() trực tiếp tối ưu sang SQL
         Goals = g.Sum(x => x.Stat.Goal),
-        //TeamGoals = g.Sum(x => x.Stat.TeamGoal),
+        //TeamGoals = ComputeTeamGoals(g.,g.Key.TeamOwnerId),
         PenGoals = g.Sum(x => x.Stat.PenGoal),
         Assists = g.Sum(x => x.Stat.Assist),
-        ShotsOT = Math.Round(g.Average(x => (double)x.Stat.ShotsOnTarget), 2),
-        Dribbles = Math.Round(g.Average(x => (double)x.Stat.Dribbles), 2),
-        ShotsPerGame = Math.Round(g.Average(x => (double)x.Stat.Shots), 2),
-        KeyPasses = Math.Round(g.Average(x => (double)x.Stat.KeyPasses), 2),
-        Fouled = Math.Round(g.Average(x => (double)x.Stat.Fouled), 2),
-        Offsides = Math.Round(g.Average(x => (double)x.Stat.Offsided), 2),
+        ShotsOT = g.Average(x => (double)x.Stat.ShotsOnTarget),
+        Dribbles = g.Average(x => (double)x.Stat.Dribbles),
+        ShotsPerGame = g.Average(x => (double)x.Stat.Shots),
+        KeyPasses = g.Average(x => (double)x.Stat.KeyPasses),
+        Fouled = g.Average(x => (double)x.Stat.Fouled),
+        Offsides = g.Average(x => (double)x.Stat.Offsided),
         Yellow = g.Sum(x => x.Stat.YellowCard),
         Red = g.Sum(x => x.Stat.RedCard),
-        PSPercentage = Math.Round(g.Average(x => x.Stat.Passes > 0 ? ((double)x.Stat.AccPasses / x.Stat.Passes) : 0), 2) * 100,
+        AccuratePassingPercentage = g.Average(x => x.Stat.Passes > 0 ? ((double)x.Stat.AccPasses / x.Stat.Passes) : 0) * 100,
+        AccPasses = g.Average(x => x.Stat.AccPasses),
         Interceptions = g.Average(x => (double)x.Stat.Interceptions),
-        Dispossessed = Math.Round(g.Average(x => (double)x.Stat.Dispossessed), 2),
-        Blocks = Math.Round(g.Average(x => (double)x.Stat.BlockedShots), 2),
-        Unstouch = Math.Round(g.Average(x => (double)x.Stat.UnsTouches), 2),
+        Dispossessed = g.Average(x => (double)x.Stat.Dispossessed),
+        Blocks = g.Average(x => (double)x.Stat.BlockedShots),
+        Unstouch = g.Average(x => (double)x.Stat.UnsTouches),
 
-        Crosses = Math.Round(g.Average(x => (double)x.Stat.Crosses), 2),
-        LongBalls = Math.Round(g.Average(x => (double)x.Stat.LongBall), 2),
-        ThroughBalls = Math.Round(g.Average(x => (double)x.Stat.ThroughBall), 2),
-        Tackles = Math.Round(g.Average(x => (double)x.Stat.TotalTackles), 2),
+        Crosses = g.Average(x => (double)x.Stat.Crosses),
+        LongBalls = g.Average(x => (double)x.Stat.LongBall),
+        ThroughBalls = g.Average(x => (double)x.Stat.ThroughBall),
+        Tackles = g.Average(x => (double)x.Stat.TotalTackles),
         MinPlayed = g.Sum(x => x.Stat.MinPlayed),
-        OwnGoal = g.Sum(x => x.Stat.OwnGoal),
-        Clearances = Math.Round(g.Average(x => (double)x.Stat.Clearances), 2),
-        AvgP = Math.Round(g.Average(x => (double)x.Stat.Passes), 2),
-        AccCrosses = Math.Round(g.Average(x => (double)x.Stat.AccCrosses), 2),
-        Touches = Math.Round(g.Average(x => (double)x.Stat.Touches), 2),
-
-        Passes = Math.Round(g.Average(x => (double)x.Stat.Passes), 2),
-
-        AerielsWon = Math.Round(g.Average(x => (double)x.Stat.AerialWon), 2),
-
-
-
-        Fouls = Math.Round(g.Average(x => (double)x.Stat.Fouls), 2),
-
+        OwnGoals = g.Sum(x => x.Stat.OwnGoal),
+        Clearances = g.Average(x => (double)x.Stat.Clearances),
+        AvgP = g.Average(x => (double)x.Stat.Passes),
+        AccCrosses = g.Average(x => (double)x.Stat.AccCrosses),
+        Touches = g.Average(x => (double)x.Stat.Touches),
+        Passes = g.Average(x => (double)x.Stat.Passes),
+        AerielsWon = g.Average(x => (double)x.Stat.AerialWon),
+        Fouls = g.Average(x => (double)x.Stat.Fouls),
         Subs = g.Count(x => x.Stat.SubInMinute > 0 && x.Stat.Position == "Sub"),
         Motm = g.Sum(x => x.Stat.Motm ? 1 : 0),
-        Saves = Math.Round(g.Average(x => (double)x.Stat.GKSaves), 2),
+        Saves = g.Average(x => (double)x.Stat.GKSaves),
     });
     private async Task<IQueryable<LeaguePlayerAggregateRow>> ApplyCountAppAsync(
     IQueryable<LeaguePlayerAggregateRow> query,
@@ -271,10 +271,22 @@ sw.ElapsedMilliseconds);
 
         return query.Where(x => x.Apps > minApps);
     }
-
-    private static IQueryable<LeaguePlayerAggregateRow> ApplySorting(
- IQueryable<LeaguePlayerAggregateRow> query,
- LeaguePlayerStatsFilter filter)
+    private async Task<Dictionary<(int TeamId, int CategoryId, int SeasonStageId), int>> ComputeTeamGoals(PagedResult<LeaguePlayerAggregateRow> page, LeaguePlayerStatsFilter filter)
+    {
+        var teamKeys = page.Items
+                           .Select(x => x.TeamOwnerId)
+                           .Distinct()
+                           .ToList();
+        var response = await _teamPlayerGrpcClient.GetTeamCategoryAsync(new GetTeamCategoryRequest()
+        {
+            TeamIds = { teamKeys },
+            CategoryId = filter.CategoryIds.FirstOrDefault(),
+            SeasonStageId = filter.SeasonStageIds
+        });
+        return response.Items.ToDictionary(item => (item.TeamId, item.CategoryId, item.SeasonStageId), item => item.TeamGoals);
+    }
+    private static IQueryable<LeaguePlayerAggregateRow> ApplySorting(IQueryable<LeaguePlayerAggregateRow> query,
+                                                                     LeaguePlayerStatsFilter filter)
     {
         //bool desc = filter.Direction == SortDirection.Desc;
 
@@ -310,7 +322,7 @@ sw.ElapsedMilliseconds);
                     x => 3 * x.Assists +
                          1.5 * x.KeyPasses +
                          x.AccCrosses +
-                         1.5 * (x.PSPercentage / 100),
+                         1.5 * (x.AccuratePassingPercentage / 100),
                     filter.Direction),
 
             LeaguePlayerOrderBy.MarketValue =>
@@ -321,6 +333,11 @@ sw.ElapsedMilliseconds);
 
             LeaguePlayerOrderBy.Assists =>
                 query.OrderByDirection(x => x.Assists, filter.Direction),
+
+            LeaguePlayerOrderBy.ShotsPerGame => query.OrderByDirection(x => x.ShotsPerGame, filter.Direction),
+            LeaguePlayerOrderBy.Dribbles => query.OrderByDirection(x => x.Dribbles, filter.Direction),
+            LeaguePlayerOrderBy.PassAccuracy => query.OrderByDirection(x => x.AccPasses, filter.Direction),
+            LeaguePlayerOrderBy.Aggression => query.OrderByDirection(x => x.Yellow + x.Red * 2, filter.Direction),
 
             LeaguePlayerOrderBy.Minutes =>
                 query.OrderByDirection(x => x.MinPlayed, filter.Direction),

@@ -8,6 +8,7 @@ service TeamPlayerGrpc {
   rpc GetTeams(GetTeamsRequest) returns (GetTeamsResponse);
   rpc GetSeasonStageIdsByCategory (GetSeasonStageIdsByCategoryRequest) returns (GetSeasonStageIdsByCategoryResponse);
   rpc GetRegisteredPlayerIdsBySeasonStages(GetRegisteredPlayerIdsRequest) returns (GetRegisteredPlayerIdsResponse);
+  rpc GetTeamCategory(GetTeamCategoryRequest) returns (GetTeamCategoryResponse);
 }
 //message ~ dto class
 message GetTeamsRequest {
@@ -39,4 +40,20 @@ message GetRegisteredPlayerIdsRequest {
 }
 message GetRegisteredPlayerIdsResponse {
     repeated int32 registered_player_ids = 1;
+}
+
+message GetTeamCategoryRequest {
+  repeated int32 team_ids = 1;
+  int32 category_id = 2;
+  int32 season_stage_id = 3;
+}
+
+message GetTeamCategoryResponse {
+  repeated GetTeamCategoryMapping items = 1;
+}
+message GetTeamCategoryMapping {
+  int32 team_id = 1;
+  int32 category_id = 2;
+  int32 season_stage_id = 3;
+  int32 team_goals=4;
 }

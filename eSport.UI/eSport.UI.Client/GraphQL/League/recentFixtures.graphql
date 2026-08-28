@@ -1,0 +1,87 @@
+﻿query fixturesByLeague(
+  $categoryId: Int!
+  $seasonStageId: Int!
+  $startDate: DateTime!
+  $endDate: DateTime!
+) {
+  fixturesByLeague(
+    categoryId: $categoryId
+    seasonStageId: $seasonStageId
+    startDate: $startDate
+    endDate: $endDate
+  ) {
+    id
+    homeId
+    awayId
+    isTopMatch
+    attendance
+    hasVideos
+    isAwarded
+    isTopMatch
+    liveScore
+    score
+    status
+    isLiveMatch
+    home {
+      aerielWon
+      shots
+      shotsOnTarget
+      corner
+    }
+    away {
+      aerielWon
+      shots
+      shotsOnTarget
+      corner
+    }
+    # currentItem
+    # isLive
+    homeTeam {
+      id
+      shortName
+      name
+      seName
+      # teamLogo {
+      #   imageUrl
+      # }
+    }
+    # homeYellowCards
+    # homeRedCards
+    awayTeam {
+      id
+      shortName
+      name
+      seName
+      # teamLogo {
+      #   imageUrl
+      # }
+    }
+    # league
+    # leagueId
+    # leagueCss
+    round
+    # parentCategoryName
+    isComplete
+    hasVideos
+    # leagueLogo
+    # date
+    time
+
+    # time2
+    # shortDate
+    timeElapsed
+    #score
+    # matchTitle
+    # awayYellowCards
+    # awayRedCards
+    # topmatch
+    # cssScoreStatus
+    # scoreStatus
+    # tournament {
+    #   name
+    #   seName
+    #   isTournament
+    # }
+    # liveOdds
+  }
+}

@@ -11,24 +11,24 @@
 {
     if (!currentSeason.ActiveCategory.IsTournament)
     {
-        @* <eSport.UI.Client.Pages.Common.DatePicker OnSelectDate="OnChangeDate" currentSeason="@currentSeason" IsMonth="false" /> *@
+        <eSport.UI.Client.Pages.Common.DatePicker OnSelectDate="OnChangeDate" currentSeason="@currentSeason" IsMonth="false" />
     }
-    @* <eSport.UI.Client.Pages.League.RecentFixtures currentSeason="@currentSeason" /> *@
+    <eSport.UI.Client.Pages.League.RecentFixtures currentSeason="@currentSeason" />
     @if (currentSeason.SelectedStageId == 1 || (currentSeason.SelectedStageId >= 3 && currentSeason.SelectedStageId <= 20 && currentSeason.SelectedStageId != 11 && currentSeason.SelectedStageId != 12))
     {
-        @* <TTSWeb.UI.Client.Pages.League.TeamStandings currentSeason="@currentSeason" /> *@
+        <eSport.UI.Client.Pages.League.TeamStandings currentSeason="@currentSeason" />
     }
     if (currentSeason.ActiveCategory.IsTournament)
     {
         @* <TTSWeb.UI.Client.Pages.League.TeamStandingsInTournament /> *@
     }
-     <eSport.UI.Client.Pages.League.Stats currentSeason="@currentSeason" /> 
+    <eSport.UI.Client.Pages.League.Stats currentSeason="@currentSeason" />
     <eSport.UI.Client.Pages.League.TopScorers currentSeason="@currentSeason" />
-    @*<TTSWeb.UI.Client.Pages.League.TopPlayerStats currentSeason="@currentSeason" />
-    <TTSWeb.UI.Client.Pages.League.TeamOfTheWeek currentSeason="@currentSeason" /> *@
+    <eSport.UI.Client.Pages.League.TopPlayerStats currentSeason="@currentSeason" />
+    @*<TTSWeb.UI.Client.Pages.League.TeamOfTheWeek currentSeason="@currentSeason" /> *@
 
 }
-  
+
 @code {
     [Parameter]
     public string? Slug { get; set; }

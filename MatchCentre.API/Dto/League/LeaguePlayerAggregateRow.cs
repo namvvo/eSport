@@ -1,8 +1,12 @@
 ﻿namespace eSport.MatchCentre.API.Dto.League;
-
+/// <summary>
+/// avg per games basis
+/// </summary>
 public sealed record LeaguePlayerAggregateRow
 {
     public int PlayerId { get; set; }
+    public string PlayerSeName { get; set; } = string.Empty;
+    public string PlayerName { get; set; } = string.Empty;
     public int TeamOwnerId { get; set; }
     public int CategoryId { get; set; }
     public double Rating { get; set; }
@@ -14,7 +18,8 @@ public sealed record LeaguePlayerAggregateRow
     public int Yellow { get; set; }
     public int Red { get; set; }
     public double ShotsPerGame { get; set; }
-    public double PSPercentage { get; set; }
+    public double AccuratePassingPercentage { get; set; } // percentage per game
+    public double AccPasses {  get; set; } // number of acc pass per game
     public double AccCrosses { get; set; }
     public double Passes { get; set; }
     public double Dribbles { get; set; }
@@ -39,12 +44,12 @@ public sealed record LeaguePlayerAggregateRow
     public string? CountryCSS { get; set; }
     public string? CategoryName { get; set; }
     public int? LeaguePictureId { get; set; }
-    public string PlayerName { get; set; } = string.Empty;
+  
     public string? TeamPosition { get; set; }
     public double Dispossessed { get; set; }
     public double Unstouch { get; set; }
     public int MinPlayed { get; set; }
-    public int OwnGoal { get; set; }
+    //public int OwnGoal { get; set; }
     public double AvgP { get; set; }
     public double AerielsWon { get; set; }
     public double MarketValue { get; set; }

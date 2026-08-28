@@ -1,4 +1,4 @@
-﻿namespace eSport.TeamPlayer.API.Dto;
+﻿namespace eSport.TeamPlayer.API.Dto.Teams;
 
 public sealed class TeamStatDto
 {
@@ -8,7 +8,7 @@ public sealed class TeamStatDto
     public int L { get; set; }
     public int GF { get; set; } // goal for
     public int GA { get; set; }
-    public string? GD { get; set; }
+    public int GD { get; set; }
     public string? Forms { get; set; }
     public string? Progress { get; set; }
     [ID]

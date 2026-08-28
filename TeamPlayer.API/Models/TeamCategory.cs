@@ -4,6 +4,7 @@ public class TeamCategory
 {
     public int CategoryId { get; set; } // int
     public int TeamId { get; set; } // int
+    public int TeamGoals { get; set; } // int
     public int SeasonStageId { get; set; } // int
     public int? Rank { get; set; } // int
     public int? LastRank { get; set; } // int

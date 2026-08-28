@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="linq2db" Version="6.4.0" />
+    <PackageReference Include="linq2db.PostgreSQL" Version="6.4.0" />
+    <PackageReference Include="linq2db.SqlServer" Version="6.4.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.10" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="postgres -catalog.tt">
+      <LastGenOutput>postgres -catalog.generated.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="postgres-teamplayerdb.tt">
+      <LastGenOutput>postgres-teamplayerdb.generated.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="postgres.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>postgres.generated.cs</LastGenOutput>
+    </None>
+    <None Update="sqlserver.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>sqlserver.generated.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="postgres -catalog.generated.cs">
+      <DependentUpon>postgres -catalog.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="postgres-teamplayerdb.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>postgres-teamplayerdb.tt</DependentUpon>
+    </Compile>
+    <Compile Update="postgres.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>postgres.tt</DependentUpon>
+    </Compile>
+    <Compile Update="sqlserver.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>sqlserver.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+</Project>

@@ -68,8 +68,39 @@ public sealed class TeamGrpcEndpoint : TeamPlayerGrpc.TeamPlayerGrpcBase
     .Distinct()
     .ToListAsync(context.CancellationToken);
         var response = new GetRegisteredPlayerIdsResponse();
-      
+
         response.RegisteredPlayerIds.AddRange(playerIds);
+        return response;
+    }
+    /// <summary>
+    /// GetTeamCategory retrieves the team category information for the specified team IDs, category ID, and season stage ID.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public override async Task<GetTeamCategoryResponse> GetTeamCategory(GetTeamCategoryRequest request,
+        ServerCallContext context)
+    {
+        var teamCategories = await _db.TeamCategories
+            .AsNoTracking()
+            .Where(x => request.TeamIds.Contains(x.TeamId)
+            && x.CategoryId == request.CategoryId
+            && x.SeasonStageId == request.SeasonStageId)
+            .ToListAsync(context.CancellationToken);
+
+        var response = new GetTeamCategoryResponse();
+        if (teamCategories.Any())
+        {
+            response.Items.AddRange(
+                teamCategories.Select(teamCategory => new GetTeamCategoryMapping
+            {
+                CategoryId = teamCategory.CategoryId,
+                SeasonStageId = teamCategory.SeasonStageId,
+                TeamId = teamCategory.TeamId,
+                TeamGoals = teamCategory.TeamGoals
+            }));
+        }
+
         return response;
     }
 }

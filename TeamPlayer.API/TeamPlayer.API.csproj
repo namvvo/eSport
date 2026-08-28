@@ -32,6 +32,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Infrastructure\Migrations\" />
+		<Protobuf Include="..\Catalog.Contracts\Protos\category.proto" Link="Protos\category.proto" GrpcServices="Client" />
 	</ItemGroup>
 
 </Project>

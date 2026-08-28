@@ -1,3 +1,4 @@
+using eSport.Catalog.API.Grpc;
 using eSport.TeamPlayer.API.Grpc;
 
 [assembly: Module("TeamPlayerTypes")]
@@ -10,8 +11,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
-
-app.MapGrpcService<TeamGrpcEndpoint>();
+app.MapGrpcService<TeamGrpcEndpoint>(); // expose gRPC service
 app.MapGraphQL();
 
 app.Run();

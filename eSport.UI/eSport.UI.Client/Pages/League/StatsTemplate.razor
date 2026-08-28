@@ -1,4 +1,5 @@
-﻿<StatsItemTemplate Items="Items" Context="item" DivCss="@DivCss">
+﻿@typeparam TItem
+<StatsItemTemplate Items="Items" Context="item" DivCss="@DivCss">
     <RowHeader>
         <th class="stat-title" colspan="2">@RowHeaderTitle</th>
     </RowHeader>
@@ -6,40 +7,50 @@
         <td class="list-key">
             @if (IsPLayer)
             {
-                <NavLink class="team-link" href="@($"cauthu/{item.SeName}")" title="@item.Name">
-                    @item.Name
+                <NavLink class="team-link" href="@($"cauthu/{GetSeName(item)}")" title="@GetName(item)">
+                    @GetName(item)
                 </NavLink>
             }
             else
             {
-                <NavLink class="team-link" href="@($"clb/du-lieu/{item.SeName}")" title="@item.Name">
-                    @item.Name
+                <NavLink class="team-link" href="@($"clb/du-lieu/{GetSeName(item)}")" title="@GetName(item)">
+                    @GetName(item)
                 </NavLink>
+
+               
             }
         </td>
         <td>
             @if (Items is not null && Items.Count > 0)
             {
                 var cssSafe = Css ?? string.Empty;
+                var info = GetInfo(item);
                 if (!string.IsNullOrEmpty(cssSafe) && (cssSafe.Contains("wrapper") || cssSafe.Contains("value")))
                 {
-                    <span class="@Css @Width">
-                        <span class="stat-bar rc-r" style="@(GetStatBar(item?.Info, Items[0]?.Info))">
-                            <span class="stat-value">@Convert.ToDecimal(item?.Info ?? "0").ToString("0.##") @(IsPercentageValue ? "%" : "")</span>
+
+                    if (!String.IsNullOrWhiteSpace(info))
+                    {
+                        <span class="@Css @Width">
+                            <span class="stat-bar rc-r" style="@(GetStatBar(info, GetInfo(Items[0])))">
+                                <span class="stat-value">@(Convert.ToDecimal(info ?? "0").ToString("0.##")) @(IsPercentageValue ? "%" : "")</span>
+                            </span>
                         </span>
-                    </span>
+                    }
                 }
                 else
                 {
-                    <span class="@Css">@item?.Info</span>
+                    <span class="@Css">@info</span>
                 }
             }
         </td>
     </RowTemplate>
 </StatsItemTemplate>
 @code {
-    [Parameter]
-    public IReadOnlyList<StatInfo>? Items { get; set; }
+    [Parameter] public IReadOnlyList<TItem> Items { get; set; } = [];
+    [Parameter] public Func<TItem, string> GetName { get; set; } = x => string.Empty;
+    [Parameter] public Func<TItem, string?> GetSeName { get; set; } = x => string.Empty;
+    [Parameter] public Func<TItem, string?> GetInfo { get; set; } = x => string.Empty;
+    // public IReadOnlyList<StatInfo>? Items { get; set; }
     [Parameter]
     public string? RowHeaderTitle { get; set; }
     [Parameter]

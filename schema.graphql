@@ -1,0 +1,689 @@
+schema {
+  query: Query
+}
+
+type Query {
+  categories: [Category!]!
+  categoryById(id: Int!): Category
+  categoryStubById(id: Int!): Category
+  fixture(id: Int!): [Fixture!]!
+  latestSeasonsByCategory(seasonStageId: Int! = 0, slug: String!): LatestSeasonByCategoryDto!
+  leaguePlayerStats(filter: LeaguePlayerStatsFilterInput!): PagedResultOfLeaguePlayerAggregateDto!
+  menuCategories: [CategoryMenuDto!]!
+  playerById(id: Int!): Player
+  recentFixtures(
+    categoryId: Int!
+    endDate: DateTime!
+    seasonStageId: Int!
+    startDate: DateTime!
+  ): [Fixture!]!
+  stageById(id: Int!): Stage
+  teamById(id: Int!): Team
+  teams: [Team!]!
+  teamsStatsByLeague(categoryId: Int!, seasonStageId: Int!): TopTeamStatDto!
+  teamStandingsByCategory(categoryId: Int!, seasonStageId: Int!): TeamStandingModel!
+}
+
+type AttackingStats {
+  assists: Int!
+  dribbles: Float!
+  fouled: Float!
+  goals: Int!
+  keyPasses: Float!
+  offsides: Float!
+  penGoals: Int!
+  shotsOnTarget: Float!
+  shotsPerGame: Float!
+}
+
+type Category {
+  categoryStages: [CategoryStage!]!
+  coefficient: Float
+  countryCSS: String
+  countryId: Int!
+  createdOnUtc: DateTime!
+  deleted: Boolean!
+  displayOrder: Int!
+  europaLeague: Int
+  europaLeagueQualifiers: Int
+  fromMonth: Int!
+  groupName: String
+  id: Int!
+  includeInTopMenu: Boolean!
+  isData: Boolean!
+  isTournament: Boolean!
+  leagueLogo: Int
+  metaDescription: String
+  metaKeywords: String
+  name: String!
+  pageSize: Int!
+  parentCategoryId: Int!
+  pictureId: Int!
+  published: Boolean!
+  relegation: Int
+  relegationPlayOff: Int
+  rounds: Int!
+  seName: String!
+  showOnHomePage: Boolean!
+  showStanding: Boolean
+  sofaScoreId: Int!
+  stages: [Stage!]!
+  tags: String
+  teams: [TeamDTO!]!
+  toMonth: Int!
+  transfermarkt: String
+  uefaC1: Int
+  uefaC1Qualifiers: Int
+  updatedOnUtc: DateTime!
+}
+
+type CategoryMenuDto {
+  countryId: Int!
+  currentSeasonUrl: String!
+  flag: String!
+  id: Int!
+  isActive: Boolean!
+  isData: Boolean!
+  isSelected: Boolean!
+  isTournament: Boolean!
+  name: String!
+  seName: String!
+}
+
+type CategoryModel {
+  country: CountryModel
+  id: Int!
+  isActive: Boolean!
+  isSelected: Boolean!
+  isTournament: Boolean!
+  name: String!
+  seasonStages: [SeasonStageDto!]!
+  seName: String!
+}
+
+type CategoryStage {
+  category: Category!
+  categoryId: Int!
+  fixtureCount: Int!
+  fromDateUseYearPart: Int!
+  fromMonth: Int!
+  id: Int!
+  stage: Stage!
+  stageId: Int!
+  toDateUseYearPart: Int!
+  toMonth: Int!
+}
+
+type CountryModel {
+  countryCSS: String!
+  name: String!
+  threeLetterIsoCode: String!
+}
+
+type DefendingStats {
+  aerielWon: Float!
+  blocks: Float!
+  clearances: Float!
+  dispossessed: Float!
+  fouls: Float!
+  interceptions: Float!
+  ownGoals: Int!
+  tackles: Float!
+}
+
+type Fixture {
+  attendance: Int
+  autoComplete: Boolean!
+  autoTime: DateTime
+  autoUrl: String
+  away: Team!
+  awayId: Int!
+  createdDate: DateTime
+  extraTime: String
+  fixtureCategories: [FixtureCategory!]!
+  fixtureComments: [FixtureComment!]!
+  fixtureStats: [FixtureStat!]!
+  fullTime: String
+  goalUrl: String
+  halfTime: String
+  hasVideos: Boolean!
+  home: Team!
+  homeId: Int!
+  id: Int!
+  incidents: String
+  isAwarded: Boolean!
+  isComplete: Boolean!
+  isFriendly: Boolean
+  isScraping: Boolean!
+  isTopMatch: Boolean!
+  liveScore: String
+  liveTV: String
+  machine: String
+  minuteExpanded: Int
+  pk: String
+  probableLineup: String
+  referee: String
+  refereeStats: String
+  round: Int!
+  runGoalLive: Boolean
+  runSquawkaLive: Boolean
+  seasonStageId: Int!
+  sofascoreId: Int!
+  stadium: String
+  status: FixtureStatusEnum!
+  time: DateTime!
+  timeElapsed: String
+  updatedComment: Boolean!
+  updatedFixtureStats: Boolean
+  updatedLiveMatch: Boolean
+  updatedMissingPlayers: Boolean
+  updatedProbableLineup: Boolean
+  updatedProbableLineup404: Boolean
+  updatedStat: Boolean
+  weather: String
+}
+
+type FixtureCategory {
+  categoryId: Int!
+  fixture: Fixture!
+  fixtureId: Int!
+  id: Int!
+}
+
+type FixtureComment {
+  action: String
+  fixture: Fixture!
+  fixtureId: Int!
+  id: Int!
+  min: String!
+  team: Int!
+  text: String!
+}
+
+type FixtureStat {
+  accCrosses: Float!
+  accLB: Float!
+  accPasses: Int!
+  accThB: Float!
+  aerialLost: Int!
+  aerialWon: Int!
+  assist: Int!
+  bigChanceCreated: Int!
+  bigChanceMissed: Int!
+  blockedShots: Int!
+  clearanceOffline: Int!
+  clearances: Int!
+  crosses: Int!
+  dispossessed: Int!
+  dribbles: Int!
+  dribblesPast: Int!
+  dribblesWon: Int!
+  duelLost: Int!
+  duelWon: Int!
+  error2Goal: Int!
+  fixture: Fixture!
+  fixtureId: Int!
+  fouled: Int!
+  fouls: Int!
+  gkCatch: Int!
+  gkClearance: Int!
+  gkErrorLeadToAShot: Int!
+  gkPenSaves: Int!
+  gkPunch: Int!
+  gkSaves: Int!
+  gkSweeper: Int!
+  gkTotalSweeper: Int!
+  goal: Int!
+  groundDuelLost: Int!
+  groundDuelWon: Int!
+  id: Int!
+  interceptions: Int!
+  isCaptain: Boolean!
+  keyEvents: String
+  keyPasses: Int!
+  lastManTackle: Int!
+  longBall: Int!
+  minPlayed: Int!
+  motm: Boolean!
+  noMatches: Int!
+  offsided: Int!
+  ownGoal: Int!
+  passes: Int!
+  penaltyConceded: Int!
+  penGoal: Int!
+  penWon: Int!
+  pkMissed: Int!
+  pkShootoutMissed: Int!
+  pkShootoutSaved: Int!
+  pkShootoutScored: Int!
+  playablePositions: String
+  playerId: Int!
+  position: String
+  possessionLost: Int!
+  rating: Float!
+  redCard: Int!
+  shirtNumber: Int
+  shotOnPost: Int!
+  shots: Int!
+  shotsBlocked: Int!
+  shotsOffTarget: Int!
+  shotsOnTarget: Int!
+  subInMinute: Int!
+  subOutMinute: Int!
+  teamOwnerId: Int!
+  throughBall: Int!
+  throwIns: Int!
+  totalTackles: Int!
+  touches: Int!
+  unsTouches: Int!
+  whoscoredFormationPlace: Int
+  xy: String
+  yellowCard: Int!
+  yellowRed: Int!
+}
+
+type GeneralPlayerStats {
+  motm: Int!
+  red: Int!
+  subs: Int!
+  yellow: Int!
+}
+
+type GoalkeepingStats {
+  cleanSheets: Float!
+  goalsConceded: Float!
+  penSaves: Float!
+  saves: Float!
+}
+
+type LatestSeasonByCategoryDto {
+  categories: [CategoryModel!]!
+  currentSeasonStage: SeasonStageDto!
+  seasons: [SeasonDto!]!
+  stages: [StageDto!]!
+  teams: [TeamSimpleDto!]!
+}
+
+type LeaguePlayerAggregateDto {
+  apps: Int!
+  attacking: AttackingStats!
+  categoryId: Int!
+  categoryName: String
+  countryCSS: String
+  customScore: Float!
+  defending: DefendingStats!
+  general: GeneralPlayerStats!
+  goalkeeping: GoalkeepingStats!
+  leaguePictureId: Int
+  marketValue: Float!
+  minPlayed: Int!
+  passing: PassingStats!
+  player: Player!
+  playerId: Int!
+  playerName: String!
+  rating: Float!
+  team: Team!
+  teamGoals: Int!
+  teamOwnerId: Int!
+  teamPosition: String
+}
+
+type PagedResultOfLeaguePlayerAggregateDto {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  items: [LeaguePlayerAggregateDto!]!
+  pageIndex: Int!
+  pageSize: Int!
+}
+
+type PassingStats {
+  accCrosses: Float!
+  avgP: Float!
+  crosses: Float!
+  longBalls: Float!
+  passAccuracy: Float!
+  passes: Float!
+  psPercentage: Float!
+  throughBalls: Float!
+  touches: Float!
+}
+
+type Player {
+  attackIndexInLast6Rounds: Int
+  birthdate: DateTime
+  countryId: Int!
+  countryId2: Int
+  defenseIndexInLast6Rounds: Int
+  fantasyOwner: Int
+  goalPlayerId: Int
+  height: String
+  id: Int!
+  internationalCaps: Int
+  marketValue: Int
+  name: String!
+  percentageGainInLast6Rounds: Decimal!
+  pictureUrl: String
+  preferredFoot: String
+  shortName: String
+  skillSets: String
+  slug: String
+  sofascorePlayerId: Int
+  squawkaPlayerId: Int
+  teamPlayers: [TeamPlayer!]!
+  teamPosition: String
+  teams: [Team!]!
+  transferMkName: String
+  updatedDate: DateTime
+  url: String
+  weight: String
+  whoscoredPlayerId: Int
+}
+
+type RankRuleModel {
+  group1: Int
+  group2: Int
+  group3: Int
+  group4: Int
+  group5: Int
+  group6: Int
+}
+
+type Season {
+  displayOrder: Int
+  id: Int!
+  seasonStages: [SeasonStage!]!
+  stages: [Stage!]!
+  status: Boolean!
+  year: String!
+  year2: Int!
+}
+
+type SeasonDto {
+  displayOrder: Int!
+  id: Int!
+  isActive: Boolean!
+  name: String
+  year: String!
+  year2: String!
+}
+
+type SeasonStage {
+  id: Int!
+  isComplete: Boolean!
+  season: Season!
+  seasonId: Int!
+  stage: Stage!
+  stageId: Int!
+  status: Boolean!
+}
+
+type SeasonStageDto {
+  categoryName: String!
+  seasonDateLimit: [DateTime!]!
+  seasonId: Int!
+  seasonStageId: Int!
+  stage: String!
+  stageId: Int!
+  team: TeamSimpleDto!
+  teamId: Int!
+  year: String!
+  year2: String!
+}
+
+type Stage {
+  c1SofascoreName: String
+  c1WhoscoredName: String
+  c3SofascoreName: String
+  c3WhoscoredName: String
+  categories: [Category!]!
+  categoryStages: [CategoryStage!]!
+  display: Boolean!
+  displayOrder: Int!
+  euroSofascoreName: String
+  euroWhoscoredName: String
+  groupStage: Boolean
+  id: Int!
+  name: String!
+  noOfMatches: Int
+  parentId: Int
+  round: Int!
+  seasons: [Season!]!
+  seasonStages: [SeasonStage!]!
+  wcSofascoreName: String
+  wcWhoscoredName: String
+}
+
+type StageDto {
+  display: Boolean!
+  id: Int!
+  isActive: Boolean!
+  name: String!
+  round: Int!
+}
+
+type StatInfo {
+  info: String
+  info2: String
+  infoWithDecimal: String
+  name: String
+  seName: String
+}
+
+type Team {
+  autoUrl: String
+  background: String
+  bet188: String
+  categories: [Category!]!
+  countryId: Int
+  fame: Int!
+  goalTeamCheck: DateTime
+  id: Int!
+  logo: String
+  name: String!
+  players: [Player!]!
+  seName: String!
+  shortName: String!
+  sofascoreId: Int
+  sofascoreUpdate: DateTime
+  teamCategories: [TeamCategory!]!
+  teamPlayers: [TeamPlayer!]!
+  theme: String
+  transferMarktCheck: DateTime
+  transferMarktName: String
+  transferMarktUrl: String
+  transferMarkUpdateDate: DateTime
+  uefaName: String!
+  uefaRanking: Int!
+  web: String
+  whoscoredId: Int
+  wsTeamCheck: DateTime
+}
+
+type TeamCategory {
+  awayCleanSheet: Int!
+  awayFailedToScore: Int!
+  awayLoseStreak: Int!
+  awayScore: Int!
+  awayUndefeated: Int!
+  awayWinStreak: Int!
+  categoryId: Int!
+  d: Int
+  failedToScore: Int!
+  forms: String
+  ga: Int
+  gd: Int
+  gf: Int
+  homeCleanSheet: Int!
+  homeFailedToScore: Int!
+  homeLoseStreak: Int!
+  homeScore: Int!
+  homeUndefeated: Int!
+  homeWinStreak: Int!
+  l: Int
+  lastRank: Int
+  loseStreak: Int!
+  p: Int
+  pts: Int
+  rank: Int
+  seasonStageId: Int!
+  team: Team!
+  teamGoals: Int!
+  teamId: Int!
+  undefeated: Int!
+  w: Int!
+  winStreak: Int!
+}
+
+type TeamDTO {
+  id: Int!
+  name: String!
+}
+
+type TeamPlayer {
+  goalShirtNumber: Int
+  id: Int!
+  player: Player!
+  playerId: Int!
+  position: String!
+  seasonStageId: Int!
+  shirtNumber: Int
+  squawkaShirtNumber: Int
+  status: Boolean!
+  team: Team!
+  teamId: Int!
+}
+
+type TeamSimpleDto {
+  name: String!
+  seasonStageId: Int!
+  shortName: String!
+  teamId: Int!
+}
+
+type TeamStandingModel {
+  isComplete: Boolean!
+  isTournament: Boolean!
+  rankRule: RankRuleModel!
+  teamStandings: [TeamStatDto!]!
+}
+
+type TeamStatDto {
+  aerialWonPS: Float!
+  aggressionR: Float!
+  aggressionY: Float!
+  d: Int!
+  forms: String
+  ga: Int!
+  gd: Int!
+  gf: Int!
+  l: Int!
+  lastRank: Int!
+  p: Int!
+  passAcc: Float!
+  progress: String
+  pts: Int!
+  rank: Int!
+  ratings: Float!
+  shotsPerGame: Float!
+  team: String
+  teamId: ID!
+  teamPossession: Float!
+  teamSeName: String
+  teamShortName: String
+  w: Int!
+}
+
+type TopTeamStatDto {
+  aerialDuels: [StatInfo!]!
+  aggression: [StatInfo!]!
+  passAccuracy: [StatInfo!]!
+  possession: [StatInfo!]!
+  ratings: [StatInfo!]!
+  shotsPerGame: [StatInfo!]!
+}
+
+input LeaguePlayerStatsFilterInput {
+  categoryIds: [Int!] = []
+  countApp: Int! = 0
+  direction: SortDirection! = DESC
+  fixtureId: Int! = 0
+  minPlayed: Int! = 0
+  onlyRegisteredPlayers: Boolean! = true
+  orderBy: LeaguePlayerOrderBy! = GOALS
+  pageIndex: Int! = 0
+  pageSize: Int! = 50
+  playerIds: [Int!] = []
+  playerName: String = ""
+  priceOrder: Int! = 0
+  seasonStageIds: Int! = 0
+  teamId: Int! = 0
+  teamPosition: String = ""
+  timeFrom: DateTime
+  timeLimit: DateTime
+  timeTo: DateTime
+}
+
+"The scope of a cache hint."
+enum CacheControlScope {
+  "The value to cache is not tied to a single user."
+  PUBLIC
+  "The value to cache is specific to a single user."
+  PRIVATE
+}
+
+enum FixtureStatusEnum {
+  NOT_STARTED
+  POSTPONED
+  CANCELED
+  FINISHED
+  AET
+}
+
+enum LeaguePlayerOrderBy {
+  RATING
+  GOALS
+  DEFENSE
+  OFFENSE
+  PASSING
+  MARKET_VALUE
+  APPS
+  ASSISTS
+  MINUTES
+  SAVES
+}
+
+enum ScalarSerializationType {
+  STRING
+  BOOLEAN
+  INT
+  FLOAT
+  OBJECT
+  LIST
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
+"The `DateTime` scalar type represents a date and time with time zone offset information."
+scalar DateTime
+
+"The `Decimal` scalar type represents a decimal floating-point number with high precision."
+scalar Decimal
+
+directive @cacheControl(
+  inheritMaxAge: Boolean
+  maxAge: Int
+  scope: CacheControlScope
+  sharedMaxAge: Int
+  vary: [String]
+) on OBJECT | FIELD_DEFINITION | INTERFACE | UNION
+
+directive @cost(weight: String!) on
+  | SCALAR
+  | OBJECT
+  | FIELD_DEFINITION
+  | ARGUMENT_DEFINITION
+  | ENUM
+  | INPUT_FIELD_DEFINITION

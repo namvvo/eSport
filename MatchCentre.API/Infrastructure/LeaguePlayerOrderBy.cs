@@ -13,8 +13,11 @@ public enum LeaguePlayerOrderBy : short
     Apps = 6,
 
     Assists = 7,
+    ShotsPerGame=8,
+    Minutes = 9,
 
-    Minutes = 8,
-
-    Saves = 9
+    Saves = 10,
+    Aggression = 11,
+    Dribbles = 12,
+    PassAccuracy=13
 }

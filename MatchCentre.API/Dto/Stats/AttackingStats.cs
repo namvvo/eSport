@@ -5,7 +5,7 @@ public sealed record AttackingStats
     public int Goals { get; set; }
     public int PenGoals { get; init; }
     public int Assists { get; init; }
-    public int TeamGoals { get; set; }
+    
     public double ShotsPerGame { get; init; }
     public double ShotsOnTarget { get; init; }
     public double KeyPasses { get; init; }

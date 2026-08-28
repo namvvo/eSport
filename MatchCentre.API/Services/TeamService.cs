@@ -1,9 +1,4 @@
-﻿
-using eSport.MatchCentre.API.Dto.Stats;
-using Grpc.Net.Client;
-using HotChocolate.Caching.Memory;
-using OpenTelemetry.Resources;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -206,7 +201,7 @@ namespace eSport.MatchCentre.API.Services
 
             var cached = await _cached.GetAsync(key);
 
-            if (cached.HasValue)
+            if (cached.HasValue )
             {
                 return JsonSerializer.Deserialize<GetTournamentStagesResponse>((string)cached)!;
             }

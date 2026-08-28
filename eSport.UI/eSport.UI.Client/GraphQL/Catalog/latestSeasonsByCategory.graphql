@@ -1,20 +1,20 @@
-query latestSeasonsByCategory($slug: String!, $seasonStageId: Int!) {
-  latestSeasonsByCategory(slug: $slug, seasonStageId: $seasonStageId) {
-    currentSeasonStage {
-      seasonStageId
-      seasonId
-      stageId
-      year
-      seasonDateLimit
-    }
-
-    
+query latestSeasonsByCategory($slug: String!, $currentSeasonStageId: Int!) {
+  latestSeasonsByCategory(slug: $slug, currentSeasonStageId: $currentSeasonStageId) {
     seasons {
       id
       year
       displayOrder
       year2
       isActive
+    }
+     teams {
+      # id
+      name
+      # seName
+      shortName
+      # teamLogo {
+      #   imageUrl
+      # }
     }
     stages {
       id
@@ -26,11 +26,24 @@ query latestSeasonsByCategory($slug: String!, $seasonStageId: Int!) {
       id
       name
       seName
-      
+      country {
+        name
+        countryCSS
+        threeLetterIsoCode
+      }
 
       isActive
       isTournament
-      
+      # banner {
+      #   imageUrl
+      # }
+    }
+    currentSeasonStage {
+      seasonStageId
+      seasonId
+      stageId
+      year
+      seasonDateLimit
     }
   }
 }

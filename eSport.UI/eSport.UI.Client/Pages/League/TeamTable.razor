@@ -1,0 +1,71 @@
+﻿<div class="overflow-hidden ml-6 mb-5 border-gray-200">
+    @if (teamStandingByCategory.IsTournament)
+    {
+        <h4 class="text-center text-lg font-medium">
+            sss
+            @*   @teamStandingByCategory. *@
+        </h4>
+    }
+    <table class="w-full bg-white standings">
+        <thead class="bg-gray-800">
+            <tr>
+                <th class="st px-4"></th>
+                <th class="text-center py-2 px-6 uppercase">R</th>
+                <th class="w-1/4 text-left py-2 px-4">Tên đội</th>
+                <th title="Số trận" class="sortable p">ST</th>
+                <th title="Thắng" class="sortable w" @click="sortTable('wb')">T</th>
+                <th title="Hòa" class="sortable d" @click="sortTable('d')">H</th>
+                <th title="Bại" class="sortable l" @click="sortTable('l')">B</th>
+                <th title="Số bàn thắng" class="sortable gf" @click="sortTable('gf')">
+                    Tg
+                </th>
+                <th title="Số bàn thua" class="sortable ga" @click="sortTable('ga')">Th</th>
+                <th title="Hiệu số" class="sortable gd" @click="sortTable('gd')">HS</th>
+                <th title="Điểm" class="sortable pts" @click="sortTable('pts')">Điểm</th>
+                <th title="Phong độ" class="w-1/3">Phong độ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var team in teamStandingByCategory.TeamStandings)
+            {
+                <tr v-for="(item, index) in standings" :key="item.teamId">
+                    <td :class="getFormClass(item)">
+                        <i v-if="item.rank > item.lastRank && item.lastRank > 0" class="fa fa-caret-down"></i>
+                        <i v-if="item.rank < item.lastRank && item.lastRank > 0" class="fa fa-caret-up"></i>
+                    </td>
+                    <td class="o sorted">
+                        <span :class="getTeamClass(index + 1)">@team.Rank</span>
+                    </td>
+                    <td class="team flex justify-end">
+                        @if (team.Rank == 1
+                       && !teamStandingByCategory.IsTournament
+                       && teamStandingByCategory.IsComplete
+                       && selectedFilterTeamStanding == 0)
+                        {
+                            <img src="/images/trophy.svg" intrinsicsize="512 x 512" width="20" height="20" alt="Trophy" title="Trophy" />
+                        }
+                        <NavLink class="ml-5" title="@(team.Team)" href="@($"/clb/du-lieu/{team.TeamSeName}")">@team.Team</NavLink>
+                    </td>
+                    <td class="p">@team.P </td>
+                    <td class="w">@team.W </td>
+                    <td class="d">@team.D </td>
+                    <td class="l">@team.L </td>
+                    <td class="gf">@team.Gf </td>
+                    <td class="ga">@team.Ga </td>
+                    <td class="gd">@team.Gd </td>
+                    <td class="pts">@team.Pts </td>
+                    <td class="form text-center">@(new MarkupString(team.Forms))</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+@code {
+    [Parameter]
+    public ITeamStandingsByCategory_TeamStandingsByCategory? teamStandingByCategory { get; set; }
+    [Parameter]
+    public int selectedFilterTeamStanding { get; set; }
+
+}

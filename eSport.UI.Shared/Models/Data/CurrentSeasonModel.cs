@@ -12,8 +12,8 @@ namespace eSport.UI.Shared.Models.Data
         public int TabIndex { get; set; } = -1;
         public int SelectedCatId { get; set; }
         public string SelectedLeague { get; set; } = string.Empty;
-        public IList<DateTime> SeasonDateRange { get; set; } = new List<DateTime>();
-        
+        public IList<DateTime> SeasonDateRange { get; set; } = [];
+
         public LeagueCalendarModel LeagueCalendar { get; set; } = new();
         public LatestSeasonByCategoryModel LatestSeasonsByCategory { get; set; } = new();
         public SeasonStageModel ActiveSeasonStage { get; set; } = new();
@@ -25,10 +25,10 @@ namespace eSport.UI.Shared.Models.Data
         public SeasonStageModel CurrentSeasonStage { get; set; } = new();
 
 
-        public IList<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
-        public IList<StageModel> Stages { get; set; } = new List<StageModel>();
-        public IList<SeasonModel> Seasons { get; set; } = new List<SeasonModel>();
-        public IList<TeamSimpleModel> Teams { get; set; } = new List<TeamSimpleModel>();
+        public IList<CategoryModel> Categories { get; set; } = [];
+        public IList<StageModel> Stages { get; set; } = [];
+        public IList<SeasonModel> Seasons { get; set; } = [];
+        public IList<TeamSimpleModel> Teams { get; set; } = [];
 
 
     }
@@ -37,7 +37,7 @@ namespace eSport.UI.Shared.Models.Data
         public int CategoryId { get; set; }
         public RoundOfFixture CurrentRound { get; set; } = new();
 
-        public IList<int> Rounds { get; set; } = new List<int>();
+        public IList<int> Rounds { get; set; } = [];
         public int LeagueEndRound { get; set; }
     }
     public class RoundOfFixture

@@ -2,14 +2,10 @@
 using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
 using System.Text.Json;
-
 namespace eSport.TeamPlayer.API.GraphQL.Queries.Teams;
-
 using eSport.TeamPlayer.API.Dto.Teams;
-using HotChocolate.Caching.Memory;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using static HotChocolate.Fusion.Rewriters.InlineFragmentOperationRewriter;
+
 
 //public class TeamByIdDataLoader : BatchDataLoader<int, Team>
 //{

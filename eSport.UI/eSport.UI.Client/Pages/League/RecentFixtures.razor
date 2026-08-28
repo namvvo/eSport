@@ -1,0 +1,48 @@
+﻿@inject eSportClient ttsClient;
+<span>recent</span>
+<GrouppedFixtures fixtures="fixtures" currentSeason="currentSeason" />
+@code {
+    [Parameter]
+    public CurrentSeasonModel? currentSeason { get; set; }
+    protected FixturePagingModel fixtures { get; set; } = new();
+    protected RoundOfFixture? RoundOfFixtureDate;
+    public string SelectedDate { get; set; }
+    public class FixturePagingModel : Shared.Models.Data.FixturePagingModel
+    {
+        public IEnumerable<IGrouping<DateTimeOffset,  IFixturesByLeague_FixturesByLeague>> GrouppedFixtures { get; set; } = [];
+    }
+    private bool shouldRender;
+    protected override bool ShouldRender() => shouldRender;
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadFixtures();
+        shouldRender = currentSeason is not null;
+        base.OnParametersSet();
+    }
+    protected async Task LoadFixtures()
+    {
+        if (currentSeason?.SelectedStageId > 0 && currentSeason.SelectedStageId > 0)
+        {
+            if (currentSeason.ActiveCategory.IsTournament) return; // must refactor to work with tournament fixtures
+
+
+            var result = await ttsClient.FixturesByLeague.ExecuteAsync(categoryId: currentSeason.ActiveCategory.Id,
+             seasonStageId: currentSeason.ActiveSeasonStage.SeasonStageId,
+             startDate: currentSeason.LeagueCalendar.CurrentRound.Start.DateTime,
+             endDate: currentSeason.LeagueCalendar.CurrentRound.End.DateTime
+            );
+
+            result.EnsureNoErrors();
+
+            fixtures.GrouppedFixtures = GroupArrayOfObjects(result?.Data?.FixturesByLeague);
+            fixtures.RoundText = $"Vòng đấu {currentSeason.LeagueCalendar.CurrentRound.Round}";
+        }
+    }
+    public IEnumerable<IGrouping<DateTimeOffset,
+                IFixturesByLeague_FixturesByLeague>>
+                GroupArrayOfObjects(IReadOnlyList<IFixturesByLeague_FixturesByLeague>? obj)
+    {
+        return obj?.GroupBy(g => g.Time);
+    }
+
+}

@@ -26,8 +26,8 @@ public sealed class LeaguePlayerStatsFilter
     public int MinPlayed { get; set; } = 0;
     public int PriceOrder { get; set; } = 0;
    
-    public LeaguePlayerOrderBy OrderBy { get; init; } = LeaguePlayerOrderBy.Goals;
+    public LeaguePlayerOrderBy OrderBy { get; set; } = LeaguePlayerOrderBy.Goals;
 
-    public SortDirection Direction { get; init; } = SortDirection.Desc;
+    public SortDirection Direction { get; set; } = SortDirection.Desc;
 
 }

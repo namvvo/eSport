@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option csharp_namespace = "eSport.Catalog.API.Grpc";
+
+package catalog;
+
+service CategoryGrpc  {
+  
+  rpc GetCategoryById (GetCategoryByIdRequest) returns (GetCategoryByIdResponse);
+}
+message GetCategoryByIdRequest {
+  int32 category_id = 1;
+}
+message GetCategoryByIdResponse {
+  CategoryMapping category = 1;
+}
+message CategoryMapping {
+  int32 id = 1;
+  string name = 2;
+  string se_name = 3;
+  bool is_tournament = 4;
+  int32 uefa_c1 =5;
+  int32 uefa_c1_qualifiers=6;
+  int32 europa_league=7;
+  int32 europa_league_qualifiers=8;
+  int32 relegation_play_off=9;
+  int32 relegation=10;
+}

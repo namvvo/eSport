@@ -17,7 +17,7 @@ namespace eSport.TeamPlayer.API.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.9")
+                .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -74,13 +74,13 @@ namespace eSport.TeamPlayer.API.Infrastructure.Migrations
                     b.Property<string>("PreferredFoot")
                         .HasColumnType("text");
 
-                    b.Property<string>("SeName")
-                        .HasColumnType("text");
-
                     b.Property<string>("ShortName")
                         .HasColumnType("text");
 
                     b.Property<string>("SkillSets")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Slug")
                         .HasColumnType("text");
 
                     b.Property<int?>("SofascorePlayerId")
@@ -281,6 +281,9 @@ namespace eSport.TeamPlayer.API.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int?>("Rank")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TeamGoals")
                         .HasColumnType("integer");
 
                     b.Property<int>("Undefeated")

@@ -6,7 +6,6 @@
 
 @implements IDisposable
 @* https://stackoverflow.com/questions/71773637/blazor-cascadingparameter-is-always-null *@
-<p>datalayout</p>
 @if (currentSeason is not null)
 {
     @*   <TTSWeb.UI.Components.Pages.Data.TeamsOnTop @rendermode="InteractiveServer" currentSeason="currentSeason" />
@@ -45,9 +44,10 @@
         if (RouteData?.RouteValues.TryGetValue("Slug", out var slug) == true &&
             RouteData?.RouteValues.TryGetValue("SeasonStageId", out var seasonStageId) == true)
         {
-
+            if (slug is not null) { }
             var results = await ttsClient.LatestSeasonsByCategory.ExecuteAsync(slug!.ToString(),
                                                                                Convert.ToInt32(seasonStageId));
+            results.EnsureNoErrors();
             if (results.IsSuccessResult())
             {
                 currentSeason = _state.Value;
@@ -82,7 +82,7 @@
                     foreach (var item in results?.Data?.LatestSeasonsByCategory.CurrentSeasonStage.SeasonDateLimit)
                         currentSeason.SeasonDateRange.Add(item.Date);
 
-                    // await LoadLeagueCalendar(currentSeason.ActiveCategory.Id, currentSeason.ActiveSeasonStage.SeasonStageId);
+                    await LoadLeagueCalendar(currentSeason.ActiveCategory.Id, currentSeason.ActiveSeasonStage.SeasonStageId);
                     if (RouteData.Template.Contains("tong-quan"))
                         currentSeason.TabIndex = 0;
                     _state.UpdateState(currentSeason);
@@ -92,30 +92,33 @@
                 // await UpdateStorage();
             }
         }
+
         else
         {
 
         }
         // return base.OnInitializedAsync();
     }
-    // async Task LoadLeagueCalendar(int catId, int seasonStageId)
-    // {
-    //     var result = await ttsClient.CurrentRoundLeagueCalendar.ExecuteAsync(catId, seasonStageId);
-    //     result.EnsureNoErrors();
-    //     if (result.Data is not null &&
-    //        result.Data.CurrentRoundLeagueCalendar is not null)
-    //         this.currentSeason.LeagueCalendar = new()
-    //             {
+    async Task LoadLeagueCalendar(int catId, int seasonStageId)
+    {
+        var result = await ttsClient.CurrentRoundLeagueCalendar.ExecuteAsync(catId, seasonStageId);
+        result.EnsureNoErrors();
+        if (result.Data is not null &&
+           result.Data.CurrentRoundLeagueCalendar is not null)
+            this.currentSeason.LeagueCalendar = new()
+            {
 
-    //                 CategoryId = catId,
-    //                 CurrentRound = new()
-    //                 {
-    //                     Start = result.Data.CurrentRoundLeagueCalendar.CurrentRound.Start,
-    //                     End = result.Data.CurrentRoundLeagueCalendar.CurrentRound.End,
-    //                     Round = result.Data.CurrentRoundLeagueCalendar.CurrentRound.Round
-    //                 },
-    //                 // LeagueEndRound = result.Data.CurrentRoundLeagueCalendar..Adapt<TTSWeb.UI.Shared.Models.Data.RoundOfFixture>(),
-    //                 Rounds = result.Data.CurrentRoundLeagueCalendar.Rounds.Adapt<List<int>>()
-    //             };
+                CategoryId = catId,
+                CurrentRound = new()
+                {
+                    Start = result.Data.CurrentRoundLeagueCalendar.CurrentRound.Start,
+                    End = result.Data.CurrentRoundLeagueCalendar.CurrentRound.End,
+                    Round = result.Data.CurrentRoundLeagueCalendar.CurrentRound.Round
+                },
+                 // LeagueEndRound = result.Data.CurrentRoundLeagueCalendar..Adapt<RoundOfFixture>
+
+                Rounds = result.Data.CurrentRoundLeagueCalendar.Rounds.Adapt<List<int>>()
+            };
+    }
 }
-<link href="/_data.css" rel="stylesheet" />
+@* <link href="/_data.css" rel="stylesheet" /> *@

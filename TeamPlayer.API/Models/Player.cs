@@ -31,7 +31,7 @@ public class Player : Entity<int>, IAggregateRoot
     public int? DefenseIndexInLast6Rounds { get; set; } // int
     public int? MarketValue { get; set; } // int
     public string? PreferredFoot { get; set; } // nvarchar(10)
-    public string? SeName { get; set; } // varchar(50)
+    public string? Slug { get; set; } // varchar(50)
     public string? SkillSets { get; set; } // varchar(max)
     public DateTime? UpdatedDate { get; set; } // datetime
 

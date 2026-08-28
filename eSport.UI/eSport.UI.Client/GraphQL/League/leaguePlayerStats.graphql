@@ -7,6 +7,7 @@
       categoryName
       leaguePictureId
       teamOwnerId
+      teamGoals
       playerId
       rating
       apps
@@ -18,7 +19,6 @@
         keyPasses
         shotsOnTarget
         shotsPerGame
-        teamGoals
       }
       defending {
         aerielWon
@@ -44,17 +44,18 @@
       goalkeeping {
         saves
       }
-     team {
+      team {
         id
         seName
-        name
         shortName
       }
       player {
         id
         name
-        seName
+        slug
         shortName
+        skillSets
+        birthdate
       }
     }
     hasNextPage

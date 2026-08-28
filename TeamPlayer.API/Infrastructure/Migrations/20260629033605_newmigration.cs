@@ -5,7 +5,7 @@
 namespace eSport.TeamPlayer.API.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class newmigration : Migration
+    public partial class NewMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -24,6 +24,7 @@
     <Project Path="eSport.Tests/eSport.Tests.csproj" />
     <Project Path="GrpcTest/GrpcTest.csproj" />
   </Folder>
+  <Project Path="DataMigration/DataMigration.csproj" Id="f13f94bc-70d8-48a5-9584-9e1acf7a2ec0" />
   <Project Path="eSport.AppHost/eSport.AppHost.csproj" />
   <Project Path="eSport.ServiceDefaults/eSport.ServiceDefaults.csproj" />
 </Solution>

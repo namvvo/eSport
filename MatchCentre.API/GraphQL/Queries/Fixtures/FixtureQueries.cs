@@ -20,5 +20,13 @@ public static partial class FixtureQueries
             throw new Exception(e.Message);
         }
     }
-   
+    [UseProjection]
+    public static async Task<IQueryable<Fixture>> GetFixturesByLeague(int seasonStageId,
+        int categoryId,
+        DateTime startDate,
+        DateTime endDate,
+        IFixtureService service)
+    {
+        return await service.GetFixturesByLeague(seasonStageId, categoryId, startDate, endDate);
+    }
 }

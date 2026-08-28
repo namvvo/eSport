@@ -81,8 +81,10 @@ public partial class FixtureStat : Entity<int>
     [Required] public int GKSweeper { get; set; } // int
     [Required] public int GKPenSaves { get; set; } // int
     [Required] public bool IsCaptain { get; set; } // bit
-
-
+    /// <summary>
+    /// total goals scored by teamownerid
+    /// </summary>
+    //public int TeamGoals { get; set; }
     public Fixture Fixture { get; set; } = null!;
 }
 

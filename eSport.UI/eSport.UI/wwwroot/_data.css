@@ -35,7 +35,7 @@ table {
 }
 table > tbody > tr > td.time {
   text-align: left;
-  width: 150px;
+  /*width: 150px;*/
 }
 table > tbody > tr > td.leaguelogo {
   width: 40px;

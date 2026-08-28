@@ -3,8 +3,7 @@
 public sealed record PassingStats
 {
     public double Passes { get; init; }
-    public double PassAccuracy { get; init; }
-    
+    public double PassAccuracy { get; init; }    
 
     public double Crosses { get; init; }
     public double AccCrosses { get; init; }

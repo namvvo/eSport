@@ -16,3 +16,4 @@ global using eSport.MatchCentre.API.Dto;
 global using eSport.ServiceDefaults.Infrastructure;
 global using eSport.ServiceDefaults.APIExtensions;
 global using eSport.MatchCentre.API.Dto.Stats;
+global using eSport.MatchCentre.API.Dto.League;

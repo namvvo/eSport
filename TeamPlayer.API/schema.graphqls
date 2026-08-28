@@ -10,6 +10,9 @@ type Query {
   categoryStubById(id: Int!): Category @lookup @cacheControl(maxAge: 0)
   teams: [Team!]! @cacheControl(maxAge: 900) @cost(weight: "10")
   teamById(id: Int!): Team @lookup @cacheControl(maxAge: 0) @cost(weight: "10")
+  teamStandingsByCategory(categoryId: Int!, seasonStageId: Int!): TeamStandingModel!
+    @cacheControl(maxAge: 0)
+    @cost(weight: "10")
 }
 
 type Category @key(fields: "id") {
@@ -41,11 +44,20 @@ type Player @key(fields: "id") {
   defenseIndexInLast6Rounds: Int
   marketValue: Int
   preferredFoot: String
-  seName: String
+  slug: String
   skillSets: String
   updatedDate: DateTime
   teams: [Team!]!
   teamPlayers: [TeamPlayer!]!
+}
+
+type RankRuleModel {
+  group1: Int
+  group2: Int
+  group3: Int
+  group4: Int
+  group5: Int
+  group6: Int
 }
 
 type Team @key(fields: "id") {
@@ -81,6 +93,7 @@ type Team @key(fields: "id") {
 type TeamCategory {
   categoryId: Int!
   teamId: Int!
+  teamGoals: Int!
   seasonStageId: Int!
   rank: Int
   lastRank: Int
@@ -129,6 +142,39 @@ type TeamPlayer {
   team: Team!
   player: Player!
   id: Int!
+}
+
+type TeamStandingModel {
+  rankRule: RankRuleModel!
+  teamStandings: [TeamStatDto!]!
+  isTournament: Boolean!
+  isComplete: Boolean!
+}
+
+type TeamStatDto {
+  p: Int!
+  w: Int!
+  d: Int!
+  l: Int!
+  gf: Int!
+  ga: Int!
+  gd: Int!
+  forms: String
+  progress: String
+  teamId: ID!
+  team: String
+  teamShortName: String
+  teamSeName: String
+  teamPossession: Float!
+  pts: Int!
+  rank: Int!
+  lastRank: Int!
+  shotsPerGame: Float!
+  passAcc: Float!
+  ratings: Float!
+  aggressionR: Float!
+  aggressionY: Float!
+  aerialWonPS: Float!
 }
 
 "The scope of a cache hint."

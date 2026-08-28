@@ -4,7 +4,16 @@ schema {
 
 type Query {
   fixture(id: Int!): [Fixture!]! @cacheControl(maxAge: 0) @cost(weight: "10")
+  fixturesByLeague(
+    seasonStageId: Int!
+    categoryId: Int!
+    startDate: DateTime!
+    endDate: DateTime!
+  ): [Fixture!]! @cacheControl(maxAge: 0) @cost(weight: "10")
   leaguePlayerStats(filter: LeaguePlayerStatsFilterInput!): PagedResultOfLeaguePlayerAggregateDto!
+    @cacheControl(maxAge: 0)
+    @cost(weight: "10")
+  topLeaguePlayersStats(filter: LeaguePlayerStatsFilterInput!): TopPlayerStatsModel!
     @cacheControl(maxAge: 0)
     @cost(weight: "10")
   teamsStatsByLeague(categoryId: Int!, seasonStageId: Int!): TopTeamStatDto!
@@ -16,7 +25,6 @@ type AttackingStats {
   goals: Int!
   penGoals: Int!
   assists: Int!
-  teamGoals: Int!
   shotsPerGame: Float!
   shotsOnTarget: Float!
   keyPasses: Float!
@@ -79,12 +87,19 @@ type Fixture {
   minuteExpanded: Int
   round: Int!
   isAwarded: Boolean!
+  isTopMatch: Boolean!
   home: Stats!
   away: Stats!
+  time2: String!
+  isLiveMatch: Boolean!
+  showStats: Boolean!
+  score: String!
   fixtureCategories: [FixtureCategory!]!
   fixtureStats: [FixtureStat!]!
   fixtureComments: [FixtureComment!]!
   id: Int!
+  homeTeam: Team! @cost(weight: "10")
+  awayTeam: Team! @cost(weight: "10")
 }
 
 type FixtureCategory {
@@ -214,6 +229,7 @@ type LeaguePlayerAggregateDto {
   minPlayed: Int!
   marketValue: Float!
   customScore: Float!
+  teamGoals: Int!
   general: GeneralPlayerStats!
   attacking: AttackingStats!
   passing: PassingStats!
@@ -225,10 +241,8 @@ type LeaguePlayerAggregateDto {
 
 type PagedResultOfLeaguePlayerAggregateDto {
   items: [LeaguePlayerAggregateDto!]!
-  totalRecords: Int!
   pageIndex: Int!
   pageSize: Int!
-  totalPages: Int!
   hasNextPage: Boolean!
   hasPreviousPage: Boolean!
 }
@@ -250,11 +264,13 @@ type Player {
 }
 
 type StatInfo {
-  name: String
-  info: String
-  infoWithDecimal: String
-  info2: String
-  seName: String
+  playerId: Int!
+  name: String!
+  info: String!
+  infoWithDecimal: String!
+  info2: String!
+  seName: String!
+  player: Player! @cost(weight: "10")
 }
 
 type Stats {
@@ -278,6 +294,18 @@ type Team {
   id: Int! @shareable
 }
 
+type TopPlayerStatsModel {
+  topPerformance: [StatInfo!]!
+  assist: [StatInfo!]!
+  goal: [StatInfo!]!
+  dribble: [StatInfo!]!
+  aggression: [StatInfo!]!
+  shotsPerGame: [StatInfo!]!
+  passAccuracy: [StatInfo!]!
+  ratings: [StatInfo!]!
+  aerialsWon: [StatInfo!]!
+}
+
 type TopTeamStatDto {
   possession: [StatInfo!]!
   aggression: [StatInfo!]!
@@ -294,6 +322,7 @@ input LeaguePlayerStatsFilterInput {
   teamId: Int! = 0
   fixtureId: Int! = 0
   playerName: String = ""
+  teamPosition: String = ""
   categoryIds: [Int!] = []
   seasonStageIds: Int! = 0
   playerIds: [Int!] = []
@@ -305,7 +334,6 @@ input LeaguePlayerStatsFilterInput {
   timeLimit: DateTime
   timeFrom: DateTime
   timeTo: DateTime
-  teamPosition: String!
 }
 
 "The scope of a cache hint."
@@ -333,8 +361,12 @@ enum LeaguePlayerOrderBy {
   MARKET_VALUE
   APPS
   ASSISTS
+  SHOTS_PER_GAME
   MINUTES
   SAVES
+  AGGRESSION
+  DRIBBLES
+  PASS_ACCURACY
 }
 
 enum SortDirection {

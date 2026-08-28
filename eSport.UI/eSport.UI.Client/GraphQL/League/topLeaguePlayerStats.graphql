@@ -1,0 +1,68 @@
+﻿query topLeaguePlayersStats($filter: LeaguePlayerStatsFilterInput!){
+  topLeaguePlayersStats(filter: $filter)
+  {
+    assist {
+      info
+      info2
+      playerId
+      player {
+        name
+        slug
+      }
+    }
+    dribble {
+      info
+      info2
+      playerId
+      player {
+        name
+        slug
+      }
+    }
+    aggression {
+      info
+      info2
+      playerId
+      player {
+        name
+        slug
+      }
+    }
+    shotsPerGame {
+      info
+      info2
+      playerId
+      player {
+        name
+        slug
+      }
+    }
+    passAccuracy {
+      info
+      info2
+      playerId
+      player {
+        name
+        slug
+      }
+    }
+    aerialsWon {
+      info
+      info2
+      playerId
+      player {
+        name
+        slug
+      }
+    }
+    ratings {
+      info
+      info2
+      playerId
+      player {
+        name
+        slug
+      }
+    }
+  }
+}

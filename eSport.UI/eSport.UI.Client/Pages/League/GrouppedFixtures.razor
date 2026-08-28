@@ -1,0 +1,123 @@
+﻿@using System.Globalization
+@foreach (var group in fixtures.GrouppedFixtures.ToList())
+{
+
+    <table class="table-auto fixture">
+        <tbody>
+            <tr>
+                <th colspan="10" class="rowgroupheader">
+                    @(group.Key.ToString("dddd dd MMMM, yyyy", CultureInfo.CreateSpecificCulture("vi-VN")))
+                    @if (group.Any() && currentSeason.ActiveSeasonStage.StageId < 21)
+                    {
+                        <span> - Vòng @group!.FirstOrDefault()!.Round</span>
+                    }
+                </th>
+            </tr>
+            @foreach (var item in group)
+            {
+                @* var vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
+    OperatingSystem.IsWindows()
+        ? "SE Asia Standard Time"
+        : "Asia/Ho_Chi_Minh");
+
+                var startVietnam = TimeZoneInfo.ConvertTime(
+                    item.Time,
+                    vietnamTimeZone); *@
+                <tr>
+                    <td class="leaguelogo">
+                        @*                         <img src="@($"/images/data/{item.LeagueLogo}")"jhg alt="" title="" /> *@
+                    </td>
+                    <td class="time">@item.Time.ToLocalTime().DateTime</td>
+                    <td class="status">
+                        <span class="status-1 rc">@ConvertTimeElapsed(item)</span>
+                    </td>
+                    <td class="topmatch-column">
+                        @if (item.IsTopMatch)
+                        {
+                            <span class="incidents-icon ui-icon topmatch" title="Trận đáng quan tâm"></span>
+                        }
+                    </td>
+                    <td class="team home">
+                        @*  @if (item.HomeRedCards > 0)
+                        {
+                            <span class="rcard">@item.HomeRedCards</span>
+                        }
+                        <NavLink href="@($"/clb/du-lieu/{item.Home.SeName}")" class="@(FixtureHelper.CheckTeamWinCss(item.Score, true))" title="@(item.Home.Name)">@item.Home.Name</NavLink> *@
+                    </td>
+                    <!-- <td class="team-logo">
+                      <img
+                        :src="`/images/data/team/${item.homeLogo}`"
+                        alt=""
+                        :title="item.home"
+                      />
+                    </td> -->
+                    <td class="result">
+                        <NavLink class="result-1 rc" href="@($"/tran-dau/{item.Id}/tuong-thuat")" title="@(item.HomeTeam.Name)">
+                            <span class="@(item.IsLiveMatch ? "blink" : "")">@item.Score</span>
+                        </NavLink>
+
+                    </td>
+                    <!-- <td class="team-logo">
+                      <img
+                        :src="`/images/data/team/${item.awayLogo}`"
+                        alt=""
+                        :title="item.away"
+                      />
+                    </td> -->
+                    <td class="team away">
+                        @*  <NavLink title="@item.Away.Name" class="@(FixtureHelper.CheckTeamWinCss(item.Score, false))" href="@($"/clb/du-lieu/{item.Away.SeName}")">@item.Away.Name</NavLink>
+                        @if (item.AwayRedCards > 0)
+                        {
+                            <span class="rcard">@item.AwayRedCards</span>
+                        }
+ *@
+                    </td>
+                    <td class="status-last">
+                        @if (item.HasVideos)
+                        {
+                            <a target="_blank" class="icon-video" title="xem video trận đấu">
+                                <i class="fa fa-video-camera"></i>
+                            </a>
+                        }
+                        <!-- <a href="#" class="comment" ng-show="item.Comments>0">
+                          {{ item.comments }} <i class="fa fa-comment-o"></i> </a
+                        > -->
+                        <nuxt-link class="statistical" :to="{
+                            name: 'tran-dau-id-tuong-thuat',
+                            params: { id: item.id },
+                            }">
+                            Tường thuật
+                        </nuxt-link>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public RecentFixtures.FixturePagingModel fixtures { get; set; } = default!;
+    [Parameter]
+    public CurrentSeasonModel? currentSeason { get; set; }
+    protected override Task OnParametersSetAsync()
+    {
+        return base.OnParametersSetAsync();
+    }
+    private bool shouldRender;
+    protected override void OnParametersSet()
+    {
+        shouldRender = currentSeason is not null;
+    }
+    protected override bool ShouldRender() => shouldRender;
+
+    private IEnumerable<IGrouping<DateTimeOffset,
+    IFixturesByLeague_FixturesByLeague>>
+            GroupArrayOfObjects(IReadOnlyList<IFixturesByLeague_FixturesByLeague>? obj)
+    {
+        return obj?.GroupBy(g => g.Time);
+    }
+    protected string ConvertTimeElapsed(IFixturesByLeague_FixturesByLeague fixture) => fixture.IsComplete ? "KT" : fixture.TimeElapsed;
+
+}

@@ -10,13 +10,13 @@
             </dd>
         }
     </dl>
-   @*  <UseStandingsByCategory Context="result"
+
+    <UseTeamStandingsByCategory Context="result"
                             SeasonStageId="@(currentSeason?.ActiveSeasonStage.SeasonStageId??0)"
                             CategoryId="@(currentSeason?.SelectedCatId??0)"
-                            FilterBy="@selectedFilterTeamStanding"
                             Strategy="ExecutionStrategy.NetworkOnly">
         <ChildContent>
-            <TeamTable teamStandingByCategory="@(result.StandingsByCategory)"
+            <TeamTable teamStandingByCategory="@(result.TeamStandingsByCategory)"
                        selectedFilterTeamStanding="@selectedFilterTeamStanding" />
         </ChildContent>
         <ErrorContent>
@@ -26,7 +26,7 @@
         <LoadingContent>
             Loading
         </LoadingContent>
-    </UseStandingsByCategory> *@
+    </UseTeamStandingsByCategory>
 
 </div>
 
