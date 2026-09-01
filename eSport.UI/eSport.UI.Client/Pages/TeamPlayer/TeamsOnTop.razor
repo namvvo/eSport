@@ -1,0 +1,51 @@
+﻿@if (currentSeason != null && currentSeason.ActiveCategory.IsActive)
+{
+
+    <UseTeams Context="result" CategoryId="currentSeason.SelectedCatId" PageIndex="1" PageSize="20"
+              SeasonStageId="currentSeason.ActiveSeasonStage.SeasonStageId" Strategy="ExecutionStrategy.CacheAndNetwork">
+        <ChildContent>
+            <div class="team-club">
+                <ul>
+                    @foreach (var item in result.Teams)
+                    {
+                        <li>
+                            <NavLink href="@($"/clb/du-lieu/{item.SeName}")">
+                                @*  <img alt="@item.Name" src="@($"/images/data/team/{item.TeamLogo.ImageUrl}")" class="team-emblem" />*@
+                                <p class="mb-2 mt-2 text-sm">@item.ShortName</p>
+                            </NavLink>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </ChildContent>
+        <ErrorContent>
+            @result.FirstOrDefault().Message
+        </ErrorContent>
+    </UseTeams>
+}
+else
+{
+    <p>no data</p>
+}
+
+@code {
+    [Parameter]
+    public CurrentSeasonModel? currentSeason { get; set; } = default!;
+
+}
+<style>
+    .team-club ul {
+        display: flex
+    }
+
+        .team-club ul > li {
+            padding: 0.5rem 0;
+            text-align: center;
+            width: 6rem;
+        }
+
+    .team-club .team-emblem {
+        height: 50px;
+        display: inline-block
+    }
+</style>

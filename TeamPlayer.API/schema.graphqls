@@ -8,7 +8,9 @@ type Query {
     @cacheControl(maxAge: 0)
     @cost(weight: "10")
   categoryStubById(id: Int!): Category @lookup @cacheControl(maxAge: 0)
-  teams: [Team!]! @cacheControl(maxAge: 900) @cost(weight: "10")
+  teams(categoryId: Int!, seasonStageId: Int!, pageIndex: Int!, pageSize: Int!): [Team!]!
+    @cacheControl(maxAge: 0)
+    @cost(weight: "10")
   teamById(id: Int!): Team @lookup @cacheControl(maxAge: 0) @cost(weight: "10")
   teamStandingsByCategory(categoryId: Int!, seasonStageId: Int!): TeamStandingModel!
     @cacheControl(maxAge: 0)

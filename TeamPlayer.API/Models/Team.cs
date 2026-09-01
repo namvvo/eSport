@@ -35,8 +35,8 @@ public class Team : Entity<int>, IAggregateRoot
     [Required]
     public required string SeName { get; set; } // varchar(50)
 
-    public ICollection<TeamCategory> TeamCategories { get; } = [];
-    public ICollection<TeamPlayer> TeamPlayers { get; } = [];
-    public ICollection<Player> Players { get; } = [];// skip navigation
+    public ICollection<TeamCategory> TeamCategories { get; set; } = [];
+    public ICollection<TeamPlayer> TeamPlayers { get; set; } = [];
+    public ICollection<Player> Players { get; set; } = [];// skip navigation
 }
 

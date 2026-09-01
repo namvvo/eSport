@@ -28,6 +28,7 @@ redis.WithParentRelationship(catalogApi);
 
 var teamPlayerDb = postgres.AddDatabase("teamPlayerdb");
 var teamPlayerApi = builder.AddProject<Projects.TeamPlayer_API>("teamPlayer-api")
+    .WithUrl("/graphql", "GraphQL")
     .WithReference(redis)
     .WithReference(rabbitMq).WaitFor(rabbitMq)
     .WithReference(teamPlayerDb).WaitFor(teamPlayerDb);

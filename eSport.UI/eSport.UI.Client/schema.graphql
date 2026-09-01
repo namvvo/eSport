@@ -20,7 +20,7 @@ type Query {
   playerById(id: Int!): Player
   stageById(id: Int!): Stage
   teamById(id: Int!): Team
-  teams: [Team!]!
+  teams(categoryId: Int!, pageIndex: Int!, pageSize: Int!, seasonStageId: Int!): [Team!]!
   teamsStatsByLeague(categoryId: Int!, seasonStageId: Int!): TopTeamStatDto!
   teamStandingsByCategory(categoryId: Int!, seasonStageId: Int!): TeamStandingModel!
   topLeaguePlayersStats(filter: LeaguePlayerStatsFilterInput!): TopPlayerStatsModel!

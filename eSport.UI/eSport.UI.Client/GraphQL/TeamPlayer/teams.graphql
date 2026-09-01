@@ -1,0 +1,13 @@
+﻿query teams($categoryId: Int!, $seasonStageId: Int!, $pageIndex:Int!, $pageSize:Int!)
+{
+  teams(categoryId: $categoryId, seasonStageId: $seasonStageId, pageIndex: $pageIndex, pageSize: $pageSize) {
+    id
+    name
+    seName
+    shortName
+    teamCategories {
+      categoryId
+      teamId
+    }
+  }
+}

@@ -8,8 +8,8 @@
 @* https://stackoverflow.com/questions/71773637/blazor-cascadingparameter-is-always-null *@
 @if (currentSeason is not null)
 {
-    @*   <TTSWeb.UI.Components.Pages.Data.TeamsOnTop @rendermode="InteractiveServer" currentSeason="currentSeason" />
-    <TTSWeb.UI.Components.Pages.Data.TopHeaderInfo currentSeason="currentSeason" @rendermode="InteractiveServer" /> *@
+     <eSport.UI.Client.Pages.TeamPlayer.TeamsOnTop @rendermode="InteractiveServer"  currentSeason="currentSeason" />
+    @*  <TTSWeb.UI.Components.Pages.Data.TopHeaderInfo currentSeason="currentSeason" @rendermode="InteractiveServer" /> *@
 }
 @Body
 

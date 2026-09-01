@@ -1,34 +1,74 @@
+using Amazon.Runtime;
+using Amazon.S3;
+using Media.API.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 
+
+
+var r2 = builder.Configuration.GetSection("R2");
+builder.Services.AddSingleton<IAmazonS3>(_ =>
+{
+    var credentials = new BasicAWSCredentials(
+        r2["AccessKeyId"]!,
+        r2["SecretAccessKey"]!);
+
+    var config = new AmazonS3Config
+    {
+        ServiceURL =
+            $"https://{r2["AccountId"]}.r2.cloudflarestorage.com",
+
+        AuthenticationRegion = "auto"
+    };
+
+    return new AmazonS3Client(credentials, config);
+});
+builder.Services.AddScoped<R2StorageService>();
+var app = builder.Build();
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapPost("/test/r2/upload", async (
+    HttpRequest request,
+    R2StorageService storage,
+    CancellationToken ct) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var form = await request.ReadFormAsync(ct);
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-});
+    if (form.Files.Count == 0)
+    {
+        return Results.BadRequest(new
+        {
+            message = "No file received",
+            fileCount = form.Files.Count
+        });
+    }
+
+    var file = form.Files[0];
+
+    var key = $"player/{Guid.NewGuid():N}-{file.FileName}";
+
+    await using var stream = file.OpenReadStream();
+
+    var etag = await storage.UploadAsync(
+        stream,
+        key,
+        file.ContentType,
+        ct);
+
+    return Results.Ok(new
+    {
+        key,
+        fileName = file.FileName,
+        contentType = file.ContentType,
+        size = file.Length,
+        etag
+    });
+})
+.DisableAntiforgery(); 
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

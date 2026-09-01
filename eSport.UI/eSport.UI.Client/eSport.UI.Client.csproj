@@ -16,6 +16,7 @@
     <GraphQL Remove="GraphQL\League\topLeaguePlayerStats.graphql" />
     <GraphQL Remove="GraphQL\MatchCentre\standingsByCategory.graphql" />
     <GraphQL Remove="GraphQL\MatchCentre\teamsStatsByLeague.graphql" />
+    <GraphQL Remove="GraphQL\TeamPlayer\teams.graphql" />
   </ItemGroup>
 
   <ItemGroup>

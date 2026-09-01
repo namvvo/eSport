@@ -12,7 +12,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.MapGrpcService<TeamGrpcEndpoint>(); // expose gRPC service
-app.MapGraphQL();
+app.MapGraphQL("/graphql");
 
 app.Run();
 await app.RunWithGraphQLCommandsAsync(args);
