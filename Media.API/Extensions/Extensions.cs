@@ -1,64 +1,53 @@
-﻿using eSport.ServiceDefaults.APIExtensions;
+using Amazon.Runtime;
+using Amazon.S3;
+using eSport.ServiceDefaults.APIExtensions;
+using Media.API.Infrastructure;
+using Media.API.Options;
+using Media.API.Services;
+using Microsoft.Extensions.Options;
 
 public static class Extensions
 {
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
-        // Avoid loading full database config and migrations if startup
-        // is being invoked from build-time OpenAPI generation
-        //if (builder.Environment.IsBuild())
-        //{
-        //    builder.Services.AddDbContext<MediaContext>();
-        //    return;
-        //}
+        if (builder.Environment.IsBuild())
+        {
+            builder.Services.AddDbContext<MediaDbContext>();
+            return;
+        }
 
+        builder.AddNpgsqlDbContext<MediaDbContext>("mediadb");
+        builder.Services.AddMigration<MediaDbContext>();
 
-        //builder.AddNpgsqlDbContext<CatalogContext>("mediadb", configureDbContextOptions: dbContextOptionsBuilder =>
-        //{
-        //    dbContextOptionsBuilder.UseNpgsql(builder =>
-        //    {
-        //        builder.UseVector();
-        //    });
+        builder.Services
+            .AddOptions<R2Options>()
+            .BindConfiguration(R2Options.SectionName)
+            .Validate(x => !string.IsNullOrWhiteSpace(x.AccountId), "R2:AccountId is required")
+            .Validate(x => !string.IsNullOrWhiteSpace(x.AccessKeyId), "R2:AccessKeyId is required")
+            .Validate(x => !string.IsNullOrWhiteSpace(x.SecretAccessKey), "R2:SecretAccessKey is required")
+            .Validate(x => !string.IsNullOrWhiteSpace(x.BucketName), "R2:BucketName is required")
+            //.Validate(x => Uri.TryCreate(x.PublicBaseUrl, UriKind.Absolute, out _), "R2:PublicBaseUrl must be an absolute URL")
+            .ValidateOnStart();
 
-        //});
+        builder.Services.AddSingleton<IAmazonS3>(sp =>
+        {
+            var r2 = sp.GetRequiredService<IOptions<R2Options>>().Value;
+            var credentials = new BasicAWSCredentials(r2.AccessKeyId, r2.SecretAccessKey);
+            var config = new AmazonS3Config
+            {
+                ServiceURL = $"https://{r2.AccountId}.r2.cloudflarestorage.com",
+                AuthenticationRegion = "auto",
+                ForcePathStyle = true
+            };
+            return new AmazonS3Client(credentials, config);
+        });
 
-        ////builder.Services.AddGraphQLServer().AddQueryType<Queries>()
-        ////                              //.AddMutationType<Mutations>()
-        ////                              .AddProjections()
-        ////                              .AddFiltering()
-        ////                              .AddSorting();
-
-        //builder.AddRedisClient("redis");
-        //builder.Services.AddSingleton<CatalogCache>();
-        //builder.Services.AddScoped<ICatalogService, CatalogService>();
-
-        ////// REVIEW: This is done for development ease but shouldn't be here in production
-        //builder.Services.AddMigration<CatalogContext>();
-
-        //// Add the integration services that consume the DbContext
-        //builder.Services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService<CatalogContext>>();
-
-        //builder.Services.AddTransient<ICatalogIntegrationEventService, CatalogIntegrationEventService>();
-
-        //builder.AddRabbitMqEventBus("eventbus")
-        //       .AddSubscription<OrderStatusChangedToAwaitingValidationIntegrationEvent, OrderStatusChangedToAwaitingValidationIntegrationEventHandler>()
-        //       .AddSubscription<OrderStatusChangedToPaidIntegrationEvent, OrderStatusChangedToPaidIntegrationEventHandler>();
-
-        //builder.Services.AddOptions<CatalogOptions>()
-        //    .BindConfiguration(nameof(CatalogOptions));
-
-        //if (builder.Configuration["OllamaEnabled"] is string ollamaEnabled && bool.Parse(ollamaEnabled))
-        //{
-        //    builder.AddOllamaApiClient("embedding")
-        //        .AddEmbeddingGenerator();
-        //}
-        //else if (!string.IsNullOrWhiteSpace(builder.Configuration.GetConnectionString("textEmbeddingModel")))
-        //{
-        //    builder.AddOpenAIClientFromConfiguration("textEmbeddingModel")
-        //        .AddEmbeddingGenerator();
-        //}
-
-        //builder.Services.AddScoped<ICatalogAI, CatalogAI>();
+        builder.Services.AddScoped<IMediaObjectStorage, R2StorageService>();
+        builder.Services.AddSingleton<MediaUrlGenerator>();
+        builder.Services
+            .AddGraphQLServer("Media")
+            .AddQueryType()
+            .AddMutationType()
+            .AddMediaTypes();
     }
 }
-

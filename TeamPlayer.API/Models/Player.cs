@@ -15,7 +15,9 @@ public class Player : Entity<int>, IAggregateRoot
     public string? Weight { get; set; } // nchar(10)
     //[Required]
     //public int PictureId { get; set; } // int
+    // Legacy source URL retained during Media.API migration. It is not a cross-service relation.
     public string? PictureUrl { get; set; }
+    public int? ImageMediaId { get; set; }
     public int? WhoscoredPlayerId { get; set; } // int
     public int? SofascorePlayerId { get; set; } // int
     public int? SquawkaPlayerId { get; set; } // int

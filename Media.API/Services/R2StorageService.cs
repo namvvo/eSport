@@ -1,57 +1,60 @@
-﻿using Amazon.S3;
+using Amazon.S3;
 using Amazon.S3.Model;
+using Media.API.Options;
+using Microsoft.Extensions.Options;
 
 namespace Media.API.Services;
 
-public class R2StorageService
+public sealed class R2StorageService : IMediaObjectStorage
 {
     private readonly IAmazonS3 _s3;
-    private readonly string _bucket;
+    private readonly R2Options _options;
 
-    public R2StorageService(
-        IAmazonS3 s3,
-        IConfiguration configuration)
+    public R2StorageService(IAmazonS3 s3, IOptions<R2Options> options)
     {
         _s3 = s3;
-        _bucket = configuration["R2:BucketName"]
-            ?? throw new InvalidOperationException("R2:BucketName is missing");
+        _options = options.Value;
     }
 
-    public async Task<string> UploadAsync(
-        Stream stream,
-        string key,
-        string contentType,
-        CancellationToken ct = default)
+    public Task<Uri> CreateUploadUrlAsync(string storageKey, string contentType, CancellationToken ct = default)
     {
-        var request = new PutObjectRequest
+        var request = new GetPreSignedUrlRequest
         {
-            BucketName = _bucket,
-            Key = key,
-            InputStream = stream,
+            BucketName = _options.BucketName,
+            Key = storageKey,
+            Verb = HttpVerb.PUT,
             ContentType = contentType,
-
-            // Required by Cloudflare R2 with AWSSDK.S3
-            DisablePayloadSigning = true,
-            DisableDefaultChecksumValidation = true
+            Expires = DateTime.UtcNow.AddMinutes(15)
         };
 
-        var response = await _s3.PutObjectAsync(request, ct);
-
-        return response.ETag;
+        return Task.FromResult(new Uri(_s3.GetPreSignedURL(request)));
     }
 
-    public async Task<List<string>> ListAsync(
-        CancellationToken ct = default)
+    public async Task<MediaObjectMetadata?> GetMetadataAsync(string storageKey, CancellationToken ct = default)
     {
-        var result = await _s3.ListObjectsV2Async(
-            new ListObjectsV2Request
+        try
+        {
+            var response = await _s3.GetObjectMetadataAsync(new GetObjectMetadataRequest
             {
-                BucketName = _bucket
-            },
-            ct);
+                BucketName = _options.BucketName,
+                Key = storageKey
+            }, ct);
 
-        return result.S3Objects
-            .Select(x => x.Key)
-            .ToList();
+            return new MediaObjectMetadata(response.ContentLength, response.ETag, response.Headers.ContentType);
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
     }
+
+    public async Task<bool> ExistsAsync(string storageKey, CancellationToken ct = default)
+        => await GetMetadataAsync(storageKey, ct) is not null;
+
+    public Task DeleteAsync(string storageKey, CancellationToken ct = default)
+        => _s3.DeleteObjectAsync(new DeleteObjectRequest
+        {
+            BucketName = _options.BucketName,
+            Key = storageKey
+        }, ct);
 }

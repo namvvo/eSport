@@ -16,7 +16,9 @@ public class Team : Entity<int>, IAggregateRoot
     [Required]
     public required string ShortName { get; set; } // nvarchar(50)
     public string? Web { get; set; } // varchar(200)
+    // Legacy source URL retained during Media.API migration. It is not a cross-service relation.
     public string? Logo { get; set; }
+    public int? LogoMediaId { get; set; }
     //[Required] public int Logo { get; set; } // int
     public string? AutoUrl { get; set; } // varchar(200)
     public string? Theme { get; set; } // varchar(50)

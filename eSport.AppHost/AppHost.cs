@@ -26,6 +26,12 @@ var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
 
 redis.WithParentRelationship(catalogApi);
 
+var mediaDb = postgres.AddDatabase("mediadb");
+
+var mediaApi = builder.AddProject<Projects.Media_API>("media-api")
+    .WithUrl("/graphql", "GraphQL")
+    .WithReference(mediaDb).WaitFor(mediaDb);
+
 var teamPlayerDb = postgres.AddDatabase("teamPlayerdb");
 var teamPlayerApi = builder.AddProject<Projects.TeamPlayer_API>("teamPlayer-api")
     .WithUrl("/graphql", "GraphQL")

@@ -7,7 +7,6 @@
 
             // Makes an individual field shareable across subgraphs
             descriptor.Field(p => p.Id)
-
                 .Shareable();
         }
     }

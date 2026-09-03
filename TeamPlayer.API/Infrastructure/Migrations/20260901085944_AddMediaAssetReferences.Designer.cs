@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using eSport.TeamPlayer.API.Infrastructure;
@@ -11,9 +12,11 @@ using eSport.TeamPlayer.API.Infrastructure;
 namespace eSport.TeamPlayer.API.Infrastructure.Migrations
 {
     [DbContext(typeof(TeamPlayerContext))]
-    partial class TeamPlayerContextModelSnapshot : ModelSnapshot
+    [Migration("20260901085944_AddMediaAssetReferences")]
+    partial class AddMediaAssetReferences
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

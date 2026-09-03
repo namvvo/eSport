@@ -1,0 +1,8 @@
+{
+  "name": "Media",
+  "transports": {
+    "http": {
+      "url": "https://localhost:7289/graphql"
+    }
+  }
+}

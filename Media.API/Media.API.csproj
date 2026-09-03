@@ -1,22 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>ba155bda-df51-477f-847f-3d2346fdbf5c</UserSecretsId>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>ba155bda-df51-477f-847f-3d2346fdbf5c</UserSecretsId>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\eSport.ServiceDefaults\eSport.ServiceDefaults.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.4.6" />
+		<PackageReference Include="HotChocolate.AspNetCore" Version="16.6.0" />
+		<PackageReference Include="HotChocolate.AspNetCore.CommandLine" Version="16.6.0" />
+		<PackageReference Include="HotChocolate.Data.EntityFramework" Version="16.6.0" />
+		<PackageReference Include="HotChocolate.Types.Analyzers" Version="16.6.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.10">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="SixLabors.ImageSharp" Version="4.1.1" />
+		<ProjectReference Include="..\eSport.ServiceDefaults\eSport.ServiceDefaults.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Infrastructure\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="4.0.102.4" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AWSSDK.S3" Version="4.0.102.4" />
+	</ItemGroup>
 
 </Project>
